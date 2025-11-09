@@ -188,7 +188,7 @@ Key entities: `Product`, `Brief`, `KPI`, `Goal`, `Epic`, `Story`, `Task`, `Signa
 - **Jira type IDs missing:** Ensure user/project scheme includes Story & Sub‑task.
 
 ## Maintainers
-- DYNE LABS — @your-team-handle
+- DYNE LABS — @christinaduthie @heyubaidullah
 
 ## License
 MIT (see `LICENSE`)
