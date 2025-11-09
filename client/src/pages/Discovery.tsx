@@ -36,8 +36,8 @@ export default function Discovery() {
   const [selected, setSelected] = useState<Set<number>>(new Set());
   const [statementLoading, setStatementLoading] = useState(false);
   const [statement, setStatement] = useState('');
+  const [publishingStatement, setPublishingStatement] = useState(false);
   const [statementPublished, setStatementPublished] = useState(false);
-  const [publishing, setPublishing] = useState(false);
 
   async function loadEmbed() {
     if (!id) return;
@@ -129,15 +129,15 @@ export default function Discovery() {
 
   async function publishStatement() {
     if (!id || !statement) return;
-    setPublishing(true);
+    setPublishingStatement(true);
     try {
       await api('/discover/problem-statement/publish', { productId: id });
       setStatementPublished(true);
-      toast.show('Problem statement added to Confluence');
+      toast.show('Problem statement added to Confluence + solution generated');
     } catch (err) {
       toast.show('Failed to add to Confluence', 'error');
     } finally {
-      setPublishing(false);
+      setPublishingStatement(false);
     }
   }
 
@@ -306,9 +306,9 @@ export default function Discovery() {
                   <button
                     className="btn"
                     onClick={publishStatement}
-                    disabled={publishing || statementPublished}
+                    disabled={publishingStatement || statementPublished}
                   >
-                    {publishing ? 'Publishing…' : statementPublished ? 'Added to Confluence' : 'Add to Confluence'}
+                    {publishingStatement ? 'Publishing…' : statementPublished ? 'Added to Confluence' : 'Add to Confluence'}
                   </button>
                 </div>
               </>

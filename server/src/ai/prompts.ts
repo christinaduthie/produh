@@ -67,3 +67,43 @@ export const ProblemStatementPrompt = `You are a precise product storyteller. Gi
 {
 "statement": string
 }`;
+
+export const StrategySolutionPrompt = `You are a staff PM translating discovery insight into execution. Given:
+- problemStatement: a final statement of customer pain and desired outcome
+- brief: { summary, pains[], personas[], kpiCandidates[] }
+
+Craft a JSON response:
+{
+  "solution": {
+    "overview": string,
+    "pillars": [{"title": string, "description": string, "owner": string}],
+    "rolloutPlan": [{"phase": string, "focus": string, "duration": string}]
+  },
+  "metrics": {
+    "primary": [{"name": string, "target": string, "timeline": string}],
+    "leading": [{"name": string, "target": string}]
+  }
+}
+Keep copy crisp and practical.`;
+
+export const DevelopmentTasksPrompt = `You are a senior engineering manager. Given a solution blueprint, break it into Jira-ready stories and tasks. Input JSON:
+{
+  "solution": {"overview": string, "pillars": [...], "rolloutPlan": [...]},
+  "metrics": {"primary": [...], "leading": [...]}
+}
+
+Output strictly:
+{
+  "plan": {
+    "stories": [{
+      "title": string,
+      "description": string,
+      "acceptance": string[],
+      "tasks": [{"title": string, "notes": string}]
+    }],
+    "qaChecklist": string[]
+  }
+}
+- Each story should be implementation-ready with 3-4 acceptance bullets.
+- Tasks should describe concrete engineering work (API, UI, QA, infra).
+- Keep text concise and actionable.`;
