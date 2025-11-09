@@ -23,6 +23,7 @@ const TABS = [
   { path: '', label: 'Status' },
   { path: 'discovery', label: 'Discovery' },
   { path: 'strategy', label: 'Strategy' },
+  { path: 'development', label: 'Development' },
   { path: 'backlog', label: 'Backlog' },
   { path: 'jira', label: 'Jira+' },
   { path: 'gtm', label: 'GTM' },
@@ -30,10 +31,13 @@ const TABS = [
   { path: 'operate', label: 'Operate' }
 ];
 
+const STATUSES = ['Not started', 'In progress', 'Completed'] as const;
+
 export default function ProductLayout() {
   const { id } = useParams();
   const [product, setProduct] = useState<Product>();
   const [loading, setLoading] = useState(true);
+  const [status, setStatus] = useState<typeof STATUSES[number]>('Not started');
 
   const load = async () => {
     setLoading(true);
@@ -53,10 +57,23 @@ export default function ProductLayout() {
         {!loading && !product && <p className="note">Product not found.</p>}
         {product && (
           <>
-            <div style={{ marginBottom: 12 }}>
-              <p className="eyebrow">Product</p>
-              <h2 className="product-title">{product.name}</h2>
-              <p style={{ color: '#94a3b8', margin: 0 }}>Code · {product.code}</p>
+            <div className="product-title-row">
+              <div>
+                <p className="eyebrow">Product</p>
+                <h2 className="product-title">{product.name}</h2>
+                <p style={{ color: '#94a3b8', margin: 0 }}>Code · {product.code}</p>
+              </div>
+              <select
+                className="status-select"
+                value={status}
+                onChange={(e) => setStatus(e.target.value as typeof STATUSES[number])}
+              >
+                {STATUSES.map((s) => (
+                  <option key={s} value={s}>
+                    {s}
+                  </option>
+                ))}
+              </select>
             </div>
             <div className="product-meta">
               <span className="badge stage">{product.stage}</span>

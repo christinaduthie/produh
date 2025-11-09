@@ -41,3 +41,29 @@ export const WeeklyDigestPrompt = `Summarize KPI movement vs target, incidents, 
 "topRisks": string[],
 "nextBets": [{"title": string, "why": string, "RICE": {"reach": number, "impact": number, "confidence": number, "effort": number}}]
 }`;
+
+export const DiscoveryIdeasPrompt = `You are a product strategist focused on pragmatic ideation.
+Given the input follow these rules:
+1. Brainstorm exactly nIdeas distinct product ideas tightly rooted in the brief.
+2. Output strictly as JSON:
+{
+  "ideas": [
+    {
+      "name": string,
+      "one_liner": string,
+      "target_users": string[],
+      "key_value": string,
+      "key_risks": string[]
+    }
+  ]
+}
+- one_liner = 1 crisp sentence.
+- target_users = short role descriptors.
+- key_value = 1–2 sentences on the customer outcome.
+- key_risks = 2–3 short bullets pointing out feasibility or adoption concerns.
+Keep language specific and avoid markdown.`;
+
+export const ProblemStatementPrompt = `You are a precise product storyteller. Given the context and selected ideas, craft a 2-3 sentence problem statement that cites customer pain, impact, and desired outcome. Output strictly:
+{
+"statement": string
+}`;
