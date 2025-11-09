@@ -44,3 +44,26 @@ With `MOCK_MODE=false` the API writes directly to the local Postgres database. I
 ## Switching back to Neon (optional)
 
 If you want to reconnect to Neon later, simply replace `DATABASE_URL` inside `server/.env` with the Neon connection string (including `sslmode=require`) and restart `npm run dev`. No code changes are required—`ensureSchema()` will run against whichever Postgres URL you provide.
+
+# ProDuh! — Phase 1 Mock Data
+
+Sources (JSON):
+- mock_data/people.json
+- mock_data/products.json
+- mock_data/emails.json
+- mock_data/chats.json
+- mock_data/meeting_transcripts.json
+- mock_data/confluence_pages.json
+- mock_data/discovery_notes.json
+- mock_data/kpi_baselines.json (optional)
+
+ID contracts:
+- Product: PROD-001 (“ProDuh!”)
+- Confluence pages: CONF-001 (PRD v0), CONF-002 (Open Questions & Decisions)
+- Meeting: MTG-002
+- Email thread: EMSG-1001..1005
+- Chat thread: CHAT-1001
+- Discovery notes: DN-1001..DN-1010
+
+Timezone: America/Chicago
+Domain: @produhlab.local
