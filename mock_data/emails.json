@@ -1,0 +1,96 @@
+[
+  {
+    "messageId": "EMSG-1001",
+    "threadId": "ETHREAD-NEWPROD-001",
+    "from": "shahrukh.khan@produhlab.local",
+    "to": ["ubaidullah.khan@produhlab.local", "mary.smith@produhlab.local"],
+    "cc": ["christina.ortiz@produhlab.local"],
+    "subject": "Customer feedback: Need a single place to connect strategy → work",
+    "body": "Hey team,\n\nMultiple customers told our CS team that roadmaps feel disconnected from day-to-day tickets. They see slides with goals, then get lost in Jira. They want a lightweight app that:\n• Shows goals/KPIs and maps them to active/next work\n• Explains \"why this ticket\" in plain language\n• Provides a weekly narrative they can share with execs\n\nCould we explore a product that solves this without heavy process changes?\n\n– Shahrukh",
+    "sentAt": "2025-11-01T08:42:11-06:00",
+    "labels": ["stakeholder", "new-product"],
+    "mentions": {
+      "jiraKeys": [],
+      "confluenceIds": ["CONF-001"],
+      "meetingIds": [],
+      "incidentIds": [],
+      "githubIssueIds": []
+    }
+  },
+  {
+    "messageId": "EMSG-1002",
+    "threadId": "ETHREAD-NEWPROD-001",
+    "inReplyTo": "EMSG-1001",
+    "from": "ubaidullah.khan@produhlab.local",
+    "to": ["shahrukh.khan@produhlab.local"],
+    "cc": ["christina.ortiz@produhlab.local", "mary.smith@produhlab.local", "bobby.deol@produhlab.local"],
+    "subject": "Re: Customer feedback: Need a single place to connect strategy → work",
+    "body": "Love this. Proposal: **ProDuh!** — a Product Ops command center.\n\nWhat it does (v1):\n1) Capture problems and evidence (emails, chats, notes)\n2) Generate crisp goals/KPIs from that evidence (single-pass AI)\n3) Link goals ↔ epics/stories so teams always see the \"why\"\n4) Produce a weekly narrative for execs and customers\n\nOpen questions:\n• How opinionated should it be about process?\n• What’s the smallest set of integrations to be useful?\n\nI’ll draft a PRD v0 (CONF-001) and set a workshop (MTG-002) to refine scope.\n\n– Ubaid",
+    "sentAt": "2025-11-01T09:06:47-06:00",
+    "labels": ["proposal", "product"],
+    "mentions": {
+      "jiraKeys": [],
+      "confluenceIds": ["CONF-001"],
+      "meetingIds": ["MTG-002"],
+      "incidentIds": [],
+      "githubIssueIds": []
+    }
+  },
+  {
+    "messageId": "EMSG-1003",
+    "threadId": "ETHREAD-NEWPROD-001",
+    "inReplyTo": "EMSG-1002",
+    "from": "christina.ortiz@produhlab.local",
+    "to": ["ubaidullah.khan@produhlab.local"],
+    "cc": ["mary.smith@produhlab.local", "joseph.duthie@produhlab.local"],
+    "subject": "Re: Customer feedback → ProDuh! proposal",
+    "body": "If we keep v1 narrow, we can move fast. Suggested constraints:\n• Read-only to Jira/Confluence initially; write later\n• Bring-your-own taxonomy (no forced workflows)\n• KPI objects are first-class citizens; every story references ≥1 KPI\n\nTech preview thoughts:\n• Frontend: React/TypeScript\n• Light backend for ingestion + summarization\n\n– Christina",
+    "sentAt": "2025-11-01T09:28:10-06:00",
+    "labels": ["eng-input", "scope"],
+    "mentions": {
+      "jiraKeys": [],
+      "confluenceIds": ["CONF-001"],
+      "meetingIds": ["MTG-002"],
+      "incidentIds": [],
+      "githubIssueIds": []
+    }
+  },
+  {
+    "messageId": "EMSG-1004",
+    "threadId": "ETHREAD-NEWPROD-001",
+    "inReplyTo": "EMSG-1003",
+    "from": "bobby.deol@produhlab.local",
+    "to": ["ubaidullah.khan@produhlab.local", "christina.ortiz@produhlab.local"],
+    "cc": ["mary.smith@produhlab.local"],
+    "subject": "Re: ProDuh! – Risk & data notes",
+    "body": "Data perspective:\n• Analytics is thin at most customers; event tracking is inconsistent\n• We should let users declare baselines manually and upload CSVs\n• Show trend deltas, not just numbers — makes exec updates easier\n\nKPI starter set I’ll bring to MTG-002:\n• Cycle time (discovery→delivery)\n• % tickets linked to a goal\n• Narrative freshness (days since last summary)\n\n– Bobby",
+    "sentAt": "2025-11-01T09:54:02-06:00",
+    "labels": ["analytics", "risk"],
+    "mentions": {
+      "jiraKeys": [],
+      "confluenceIds": ["CONF-001"],
+      "meetingIds": ["MTG-002"],
+      "incidentIds": [],
+      "githubIssueIds": []
+    }
+  },
+  {
+    "messageId": "EMSG-1005",
+    "threadId": "ETHREAD-NEWPROD-001",
+    "inReplyTo": "EMSG-1004",
+    "from": "mary.smith@produhlab.local",
+    "to": ["ubaidullah.khan@produhlab.local", "christina.ortiz@produhlab.local", "joseph.duthie@produhlab.local", "bobby.deol@produhlab.local", "shahrukh.khan@produhlab.local"],
+    "cc": [],
+    "subject": "Next step: Workshop invite on ProDuh! scope",
+    "body": "Approved to explore. Keep v1 thin and customer-demoable.\n\nDecisions for MTG-002:\n• Problem statement and target user (no buzzwords)\n• Minimal integrations for value (Confluence/Jira read-only)\n• KPI model and the weekly narrative output\n\nIf we align, we’ll greenlight an MVP spike.\n\n– Mary",
+    "sentAt": "2025-11-01T10:12:30-06:00",
+    "labels": ["approval", "workshop"],
+    "mentions": {
+      "jiraKeys": [],
+      "confluenceIds": ["CONF-001"],
+      "meetingIds": ["MTG-002"],
+      "incidentIds": [],
+      "githubIssueIds": []
+    }
+  }
+]

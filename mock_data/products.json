@@ -1,0 +1,11 @@
+[
+  {
+    "id": "PROD-001",
+    "name": "ProDuh!",
+    "owner_p_id": "U-001",
+    "stage": "Discovery",
+    "health": "amber",
+    "goals": [],
+    "kpis": []
+  }
+]
