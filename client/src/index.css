@@ -760,3 +760,7 @@ input::placeholder {
   letter-spacing: 0.08em;
   color: var(--text-secondary);
 }
+
+.statement-actions {
+  margin-top: 12px;
+}
