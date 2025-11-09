@@ -292,6 +292,8 @@ function handleMockQuery(sql: string, params: any[]): any[] {
   switch (sql) {
     case 'SELECT name FROM product WHERE id=$1':
       return mockTables.products.filter((p) => p.id === params[0]).map(clone);
+    case 'SELECT * FROM product WHERE id=$1':
+      return mockTables.products.filter((p) => p.id === params[0]).map(clone);
     case 'SELECT COUNT(*)::int AS cnt FROM brief WHERE product_id=$1': {
       const count = mockTables.briefs.filter((b) => b.product_id === params[0]).length;
       return [{ cnt: count }];

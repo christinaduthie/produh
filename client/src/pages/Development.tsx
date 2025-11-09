@@ -1,159 +1,231 @@
-import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { api, get } from '../api';
-import { useProductContext } from './ProductLayout';
-import { useToast } from '../components/ToastProvider';
+import { useEffect, useMemo, useState } from 'react';
 
-type DevPlan = {
-  stories?: Array<{
-    title: string;
-    description: string;
-    acceptance?: string[];
-    tasks?: Array<{ title: string; notes?: string }>;
-  }>;
-  qaChecklist?: string[];
+type SprintItem = {
+  title: string;
+  type: string;
+  status: 'To Do' | 'In Progress' | 'Done';
+  label: string;
+  owner: string;
+  eta: string;
+  effortHours: number;
+  bugs: number;
+  errors: number;
 };
 
-type PlanResponse = {
-  plan: DevPlan | null;
-  jiraKeys?: Record<string,string>;
+type SprintResponse = {
+  items: SprintItem[];
+  statusSummary: { todo: number; inProgress: number; done: number };
+  issueSummary: { bugs: number; errors: number };
+  timeline: Array<{ label: string; planned: number; actual: number }>;
+  utilization: { hoursCommitted: number; hoursUsed: number };
 };
 
 export default function Development() {
-  const { id } = useParams();
-  const { product } = useProductContext();
-  const toast = useToast();
-  const [plan, setPlan] = useState<DevPlan | null>(null);
-  const [jiraKeys, setJiraKeys] = useState<Record<string,string>>({});
-  const [loading, setLoading] = useState(true);
-  const [generating, setGenerating] = useState(false);
-  const [pushing, setPushing] = useState(false);
+  const [sprint, setSprint] = useState<SprintResponse | null>(null);
+  const [loading, setLoading] = useState(false);
 
-  async function loadPlan() {
-    if (!id) return;
+  const totalStatus = useMemo(() => {
+    if (!sprint) return 0;
+    return sprint.statusSummary.todo + sprint.statusSummary.inProgress + sprint.statusSummary.done;
+  }, [sprint]);
+
+  const utilizationPct = useMemo(() => {
+    if (!sprint) return 0;
+    const { hoursCommitted, hoursUsed } = sprint.utilization;
+    if (!hoursCommitted) return 0;
+    return Math.min(100, Math.round((hoursUsed / hoursCommitted) * 100));
+  }, [sprint]);
+
+  function loadSprint() {
     setLoading(true);
-    try {
-      const res = await get<PlanResponse>(`/development/latest?productId=${id}`);
-      setPlan(res.plan);
-      setJiraKeys(res.jiraKeys || {});
-    } catch {
-      setPlan(null);
-      setJiraKeys({});
-    } finally {
+    setTimeout(() => {
+      setSprint(DUMMY_SPRINT);
       setLoading(false);
-    }
+    }, 400);
   }
 
   useEffect(() => {
-    loadPlan();
-  }, [id]);
+    loadSprint();
+  }, []);
 
-  async function generatePlan() {
-    if (!id) return;
-    setGenerating(true);
-    try {
-      const res = await api('/development/generate', { productId: id });
-      setPlan(res.plan);
-      setJiraKeys({});
-      toast.show('Development tasks drafted');
-    } catch (err) {
-      toast.show('Failed to draft development plan', 'error');
-    } finally {
-      setGenerating(false);
-    }
-  }
-
-  async function pushToJira() {
-    if (!id) return;
-    setPushing(true);
-    try {
-      const res = await api('/development/push', { productId: id });
-      setJiraKeys(res.keys || {});
-      toast.show('Stories created in Jira');
-    } catch (err) {
-      toast.show('Failed to create Jira stories', 'error');
-    } finally {
-      setPushing(false);
-    }
-  }
+  const statusPie = createStatusPie(sprint?.statusSummary);
+  const issuePie = createIssuePie(sprint?.issueSummary);
 
   return (
     <div className="panel-grid">
       <section className="panel">
         <header>
           <div>
-            <p className="eyebrow">Development Plan</p>
-            <h3 style={{ margin: 0 }}>Tasks & Stories</h3>
+            <p className="eyebrow">Development Ops</p>
+            <h3 style={{ margin: 0 }}>Sprint cockpit</h3>
           </div>
-          <button className="btn" onClick={generatePlan} disabled={generating}>
-            {generating ? 'Generating…' : 'Generate Tasks'}
+          <button className="btn" onClick={loadSprint} disabled={loading}>
+            {loading ? 'Refreshing…' : 'Refresh Sprint'}
           </button>
         </header>
-        {loading ? (
-          <p className="note">Loading plan…</p>
-        ) : plan?.stories?.length ? (
-          <div className="idea-grid">
-            {plan.stories.map((story, idx) => (
-              <div key={`${story.title}-${idx}`} className="idea-card active">
-                <span className="idea-badge active">
-                  Story {idx + 1}
-                  {jiraKeys[`story_${idx}`] ? ` · ${jiraKeys[`story_${idx}`]}` : ''}
-                </span>
-                <h4>{story.title}</h4>
-                <p>{story.description}</p>
-                {!!story.acceptance?.length && (
-                  <ul className="idea-risks">
-                    {story.acceptance.map((a, aIdx) => (
-                      <li key={`acc-${idx}-${aIdx}`}>{a}</li>
-                    ))}
-                  </ul>
-                )}
-                {!!story.tasks?.length && (
-                  <div className="statement-card">
-                    <h4>Tasks</h4>
-                    <ul className="idea-risks">
-                      {story.tasks.map((task, tIdx) => (
-                        <li key={`task-${idx}-${tIdx}`}>
-                          <strong>{task.title}</strong> — {task.notes}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
+        <p>
+          Shows every work item labeled <strong>current-sprint</strong>, giving PMs instant clarity into scope, issues,
+          and schedule health.
+        </p>
+        <div className="summary-grid">
+          <div className="stat-card">
+            <span>Stories</span>
+            <strong>{totalStatus}</strong>
+          </div>
+          <div className="stat-card">
+            <span>Utilization</span>
+            <strong>{utilizationPct}%</strong>
+            {sprint && (
+              <small>
+                {sprint.utilization.hoursUsed}h / {sprint.utilization.hoursCommitted}h
+              </small>
+            )}
+          </div>
+        </div>
+      </section>
+
+      <section className="panel">
+        <header>
+          <div>
+            <p className="eyebrow">At a glance</p>
+            <h3 style={{ margin: 0 }}>Status + Issues</h3>
+          </div>
+        </header>
+        <div className="pie-grid">
+          <div className="pie-card">
+            <h4>Status split</h4>
+            <div className="pie-chart" style={{ background: statusPie }} />
+            <ul>
+              <li>To Do: {sprint?.statusSummary.todo || 0}</li>
+              <li>In Progress: {sprint?.statusSummary.inProgress || 0}</li>
+              <li>Done: {sprint?.statusSummary.done || 0}</li>
+            </ul>
+          </div>
+          <div className="pie-card">
+            <h4>Bugs vs Errors</h4>
+            <div className="pie-chart" style={{ background: issuePie }} />
+            <ul>
+              <li>Bugs: {sprint?.issueSummary.bugs || 0}</li>
+              <li>Errors: {sprint?.issueSummary.errors || 0}</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section className="panel">
+        <header>
+          <div>
+            <p className="eyebrow">Stories + Features</p>
+            <h3 style={{ margin: 0 }}>Current Sprint</h3>
+          </div>
+        </header>
+        {sprint?.items.length ? (
+          <div className="board-grid">
+            {sprint.items.map((item) => (
+              <div key={`${item.title}-${item.owner}`} className="sprint-card">
+                <div className="sprint-card__header">
+                  <span className="pill">{item.status}</span>
+                  <span className="pill">{item.type}</span>
+                </div>
+                <h4>{item.title}</h4>
+                <p>Owner: {item.owner}</p>
+                <div className="sprint-meta">
+                  <span>ETA: {new Date(item.eta).toLocaleDateString()}</span>
+                  <span>Effort: {item.effortHours}h</span>
+                  <span>Bugs: {item.bugs}</span>
+                  <span>Errors: {item.errors}</span>
+                </div>
               </div>
             ))}
           </div>
         ) : (
-          <p className="note">Generate to see story/task breakdown.</p>
-        )}
-        {!!plan?.qaChecklist?.length && (
-          <div className="statement-card" style={{ marginTop: 16 }}>
-            <h4>QA Checklist</h4>
-            <ul className="idea-risks">
-              {plan.qaChecklist.map((item, idx) => (
-                <li key={`qa-${idx}`}>{item}</li>
-              ))}
-            </ul>
-          </div>
+          <p className="note">Refresh to bring in labeled current-sprint stories.</p>
         )}
       </section>
 
       <section className="panel">
         <header>
           <div>
-            <p className="eyebrow">Jira Automation</p>
-            <h3 style={{ margin: 0 }}>Push Stories</h3>
+            <p className="eyebrow">Schedule</p>
+            <h3 style={{ margin: 0 }}>Timeline & time tracking</h3>
           </div>
-          <span className="pill">{product?.stage || 'Stage TBD'}</span>
         </header>
-        <p>Create the drafted Stories + Sub-tasks in Jira.</p>
-        <button className="btn primary" onClick={pushToJira} disabled={pushing || !plan?.stories?.length}>
-          {pushing ? 'Creating…' : 'Create Jira Stories'}
-        </button>
-        {!!Object.keys(jiraKeys).length && (
-          <p className="note">Latest Jira keys: {Object.values(jiraKeys).join(', ')}</p>
-        )}
+        {sprint?.timeline.map((entry) => (
+          <div key={entry.label} className="timeline-row">
+            <strong>{entry.label}</strong>
+            <div className="timeline-bars">
+              <div className="timeline-bar timeline-bar--planned" style={{ width: `${entry.planned * 2}%` }}>
+                Planned {entry.planned}h
+              </div>
+              <div className="timeline-bar timeline-bar--actual" style={{ width: `${entry.actual * 2}%` }}>
+                Actual {entry.actual}h
+              </div>
+            </div>
+          </div>
+        ))}
       </section>
     </div>
   );
+}
+
+const DUMMY_SPRINT: SprintResponse = {
+  items: [
+    {
+      title: 'Feature flag rollout',
+      type: 'Feature',
+      status: 'In Progress',
+      label: 'current-sprint',
+      owner: 'ENG',
+      eta: new Date(Date.now() + 3 * 86400000).toISOString(),
+      effortHours: 18,
+      bugs: 1,
+      errors: 0
+    },
+    {
+      title: 'Audit logging hardening',
+      type: 'Story',
+      status: 'To Do',
+      label: 'current-sprint',
+      owner: 'PM',
+      eta: new Date(Date.now() + 5 * 86400000).toISOString(),
+      effortHours: 12,
+      bugs: 0,
+      errors: 1
+    },
+    {
+      title: 'Mobile crash fix spike',
+      type: 'Story',
+      status: 'Done',
+      label: 'current-sprint',
+      owner: 'QA',
+      eta: new Date(Date.now() + 1 * 86400000).toISOString(),
+      effortHours: 10,
+      bugs: 0,
+      errors: 0
+    }
+  ],
+  statusSummary: { todo: 1, inProgress: 1, done: 1 },
+  issueSummary: { bugs: 1, errors: 1 },
+  timeline: [
+    { label: 'Sprint -1', planned: 40, actual: 42 },
+    { label: 'Sprint 0', planned: 40, actual: 38 },
+    { label: 'Sprint 1', planned: 40, actual: 46 }
+  ],
+  utilization: { hoursCommitted: 40, hoursUsed: 34 }
+};
+
+function createStatusPie(summary?: { todo: number; inProgress: number; done: number }) {
+  if (!summary) return 'var(--panel-bg)';
+  const total = summary.todo + summary.inProgress + summary.done || 1;
+  const todoPct = (summary.todo / total) * 100;
+  const progressPct = (summary.inProgress / total) * 100;
+  const donePct = 100 - todoPct - progressPct;
+  return `conic-gradient(#eab308 0 ${todoPct}%, #3b82f6 ${todoPct}% ${todoPct + progressPct}%, #22c55e ${todoPct + progressPct}% 100%)`;
+}
+
+function createIssuePie(summary?: { bugs: number; errors: number }) {
+  if (!summary) return 'var(--panel-bg)';
+  const total = summary.bugs + summary.errors || 1;
+  const bugsPct = (summary.bugs / total) * 100;
+  return `conic-gradient(#ef4444 0 ${bugsPct}%, #f97316 ${bugsPct}% 100%)`;
 }

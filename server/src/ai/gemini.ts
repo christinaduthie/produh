@@ -18,6 +18,9 @@ export async function listGeminiModels() {
  * - Tries a few model fallbacks if a 404 NOT_FOUND occurs
  * - Throws a readable error with the last response payload
  */
+const RETRYABLE_STATUS = new Set([408, 409, 429, 500, 502, 503, 504]);
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
 export async function geminiJSON(prompt: string, input: unknown) {
   const tryModels = [
     ENV.GEMINI.MODEL || 'gemini-1.5-pro-002',
@@ -43,10 +46,7 @@ export async function geminiJSON(prompt: string, input: unknown) {
 
   for (const model of tryModels) {
     try {
-      const url = `${BASE}/models/${encodeURIComponent(model)}:generateContent?key=${ENV.GEMINI.KEY}`;
-      const { data } = await axios.post(url, body, { timeout: 15000 });
-
-      // Gemini returns the JSON string in parts[0].text (or inline_data for some cases)
+      const data = await callModel(model, body);
       const part = data?.candidates?.[0]?.content?.parts?.[0];
       const text = part?.text ?? part?.inline_data?.data ?? '{}';
       return JSON.parse(text);
@@ -65,4 +65,30 @@ export async function geminiJSON(prompt: string, input: unknown) {
   const status = lastErr?.response?.status || lastErr?.code || 'unknown';
   const payload = lastErr?.response?.data ? JSON.stringify(lastErr.response.data) : '';
   throw new Error(`Gemini error (${status}): ${payload}`);
+}
+
+async function callModel(model: string, body: unknown) {
+  const url = `${BASE}/models/${encodeURIComponent(model)}:generateContent?key=${ENV.GEMINI.KEY}`;
+  const maxAttempts = 3;
+  let attempt = 0;
+  let delay = 1000;
+
+  while (attempt < maxAttempts) {
+    try {
+      const { data } = await axios.post(url, body, { timeout: 20000 });
+      return data;
+    } catch (err: any) {
+      const status = err?.response?.status;
+      const retryable = RETRYABLE_STATUS.has(Number(status));
+      attempt += 1;
+      if (retryable && attempt < maxAttempts) {
+        await sleep(delay);
+        delay *= 2;
+        continue;
+      }
+      throw err;
+    }
+  }
+
+  throw new Error('Reached max retries when calling Gemini');
 }

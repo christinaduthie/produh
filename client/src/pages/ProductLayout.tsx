@@ -1,6 +1,7 @@
 import { Outlet, NavLink, useParams, useOutletContext } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { get } from '../api';
+import NotesModal from '../components/NotesModal';
 
 type Product = {
   id: string;
@@ -23,8 +24,8 @@ const TABS = [
   { path: '', label: 'Status' },
   { path: 'discovery', label: 'Discovery' },
   { path: 'strategy', label: 'Strategy' },
-  { path: 'development', label: 'Development' },
   { path: 'backlog', label: 'Backlog' },
+  { path: 'development', label: 'Development' },
   { path: 'jira', label: 'Jira+' },
   { path: 'gtm', label: 'GTM' },
   { path: 'release', label: 'Release' },
@@ -38,6 +39,7 @@ export default function ProductLayout() {
   const [product, setProduct] = useState<Product>();
   const [loading, setLoading] = useState(true);
   const [status, setStatus] = useState<typeof STATUSES[number]>('Not started');
+  const [notesOpen, setNotesOpen] = useState(false);
 
   const load = async () => {
     setLoading(true);
@@ -59,32 +61,25 @@ export default function ProductLayout() {
           <>
             <div className="product-title-row">
               <div>
-                <p className="eyebrow">Product</p>
-                <h2 className="product-title">{product.name}</h2>
-                <p style={{ color: '#94a3b8', margin: 0 }}>Code · {product.code}</p>
+                <p className="eyebrow">Project</p>
+                <h2 className="product-title">Project: {product.name}</h2>
               </div>
-              <select
-                className="status-select"
-                value={status}
-                onChange={(e) => setStatus(e.target.value as typeof STATUSES[number])}
-              >
-                {STATUSES.map((s) => (
-                  <option key={s} value={s}>
-                    {s}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="product-meta">
-              <span className="badge stage">{product.stage}</span>
-              <span className="badge approval">{product.approval}</span>
-              <span className="badge health">{product.health}</span>
-              {product.next_milestone && <span className="pill">Next: {product.next_milestone}</span>}
-              {Array.isArray(product.owners) && product.owners.length > 0 && (
-                <span className="pill">
-                  Owners: {product.owners.map((o) => o?.name || 'Unknown').join(', ')}
-                </span>
-              )}
+              <div className="status-controls">
+                <select
+                  className="status-select"
+                  value={status}
+                  onChange={(e) => setStatus(e.target.value as typeof STATUSES[number])}
+                >
+                  {STATUSES.map((s) => (
+                    <option key={s} value={s}>
+                      {s}
+                    </option>
+                  ))}
+                </select>
+                <button className="btn secondary" type="button" onClick={() => setNotesOpen(true)}>
+                  My notes
+                </button>
+              </div>
             </div>
           </>
         )}
@@ -101,6 +96,7 @@ export default function ProductLayout() {
         ))}
       </nav>
       <Outlet context={{ product, refresh: load, loading }} />
+      <NotesModal open={notesOpen} onClose={() => setNotesOpen(false)} />
     </div>
   );
 }

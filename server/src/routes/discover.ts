@@ -206,11 +206,22 @@ r.post('/brainstorm', async (req,res)=>{
   const brief = await latestBrief(productId);
   if (!brief) return res.status(400).json({ error: 'No brief found. Generate one first.' });
   const nIdeas = Math.min(Math.max(Number(requested) || 5, 1), 10);
-  const resp = await geminiJSON(DiscoveryIdeasPrompt, {
-    brief: briefToText(brief),
-    nIdeas
-  });
-  res.json({ ideas: resp?.ideas || [] });
+  try {
+    const resp = await geminiJSON(DiscoveryIdeasPrompt, {
+      brief: briefToText(brief),
+      nIdeas
+    });
+    const ideas = normalizeIdeas(resp);
+    res.json({ ideas });
+  } catch (err: any) {
+    const message = err?.message || 'LLM request failed';
+    if (/429/.test(message) || /RESOURCE_EXHAUSTED/i.test(message)) {
+      return res
+        .status(429)
+        .json({ error: 'LLM rate limited. Please retry in a moment.' });
+    }
+    res.status(502).json({ error: 'Unable to brainstorm ideas right now.' });
+  }
 });
 
 r.post('/problem-statement', async (req,res)=>{
@@ -260,6 +271,19 @@ function briefToText(brief: any) {
     personas ? `Personas: ${personas}` : '',
     kpis ? `KPI candidates:\n${kpis}` : ''
   ].filter(Boolean).join('\n\n');
+}
+
+function normalizeIdeas(resp: any) {
+  if (Array.isArray(resp?.ideas) && resp.ideas.length) return resp.ideas;
+  const perspectives = Array.isArray(resp?.perspectives) ? resp.perspectives : [];
+  if (!perspectives.length) return [];
+  return perspectives.map((p: any) => ({
+    name: p?.label || p?.id || 'Idea',
+    one_liner: p?.narrative || '',
+    target_users: Array.isArray(p?.bullets) ? p.bullets.slice(0, 3) : [],
+    key_value: p?.decision_criteria?.join(' • ') || undefined,
+    key_risks: Array.isArray(p?.risks) ? p.risks : []
+  }));
 }
 
 export default r;
