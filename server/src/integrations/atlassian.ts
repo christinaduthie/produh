@@ -21,6 +21,24 @@ const { data } = await axios.post(url, body, { auth });
 return { id: data.id, link: `${ENV.ATLASSIAN.BASE_URL}/wiki${data._links.webui}` };
 }
 
+export async function confluenceGetPage(pageId: string){
+const url = `${ENV.ATLASSIAN.BASE_URL}/wiki/rest/api/content/${pageId}?expand=body.storage,_links,version`;
+const { data } = await axios.get(url, { auth });
+return data;
+}
+
+export async function confluenceUpdatePage(pageId: string, title: string, storageHtml: string, currentVersion: number){
+const url = `${ENV.ATLASSIAN.BASE_URL}/wiki/rest/api/content/${pageId}`;
+const body = {
+id: pageId,
+type: 'page',
+title,
+body: { storage: { value: storageHtml, representation: 'storage' } },
+version: { number: (currentVersion || 0) + 1 }
+};
+const { data } = await axios.put(url, body, { auth });
+return { id: data.id, link: `${ENV.ATLASSIAN.BASE_URL}/wiki${data._links.webui}` };
+}
 
 export async function confluenceAttach(pageId: string, filename: string, fileBuffer: Buffer) {
 const url = `${ENV.ATLASSIAN.BASE_URL}/wiki/rest/api/content/${pageId}/child/attachment`;

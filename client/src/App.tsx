@@ -6,6 +6,7 @@ import ProductLayout from './pages/ProductLayout';
 import Status from './pages/Status';
 import Discovery from './pages/Discovery';
 import Strategy from './pages/Strategy';
+import Development from './pages/Development';
 import Backlog from './pages/Backlog';
 import JiraEnhancements from './pages/JiraEnhancements';
 import GTM from './pages/GTM';
@@ -66,6 +67,7 @@ export default function App() {
               <Route index element={<Status />} />
               <Route path="discovery" element={<Discovery />} />
               <Route path="strategy" element={<Strategy />} />
+              <Route path="development" element={<Development />} />
               <Route path="backlog" element={<Backlog />} />
               <Route path="jira" element={<JiraEnhancements />} />
               <Route path="gtm" element={<GTM />} />
