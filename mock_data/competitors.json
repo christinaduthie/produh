@@ -1,0 +1,48 @@
+{
+  "landscapeDate": "2025-11-09",
+  "segments": [
+    "Product/Portfolio Planning",
+    "Backlog & Prioritization",
+    "Release/Change Comms",
+    "Ops Signals & Post-Release"
+  ],
+  "vendors": [
+    {
+      "name": "Productboard",
+      "focus": ["Prioritization", "Roadmaps", "Feedback Aggregation"],
+      "parityNotes": "Strong prioritization views; limited deep post-release signal triage",
+      "pricingTier": "Mid/Enterprise",
+      "notableGapsVsProDuh": ["Lightweight ops/incident loop", "Limited multi-source AI synthesis by default"]
+    },
+    {
+      "name": "Aha!",
+      "focus": ["Roadmaps", "Strategy/Goals Alignment", "Portfolio Views"],
+      "parityNotes": "Rich strategy & portfolio; integration work needed for signal ingestion",
+      "pricingTier": "Enterprise",
+      "notableGapsVsProDuh": ["Agentic loops with success gating not first-class"]
+    },
+    {
+      "name": "Jira Align",
+      "focus": ["Enterprise Portfolio", "PI Planning", "Metrics at scale"],
+      "parityNotes": "Deep enterprise alignment; heavy for SMB teams",
+      "pricingTier": "Enterprise",
+      "notableGapsVsProDuh": ["Light discovery synthesis; heavier process"
+      ]
+    },
+    {
+      "name": "Linear",
+      "focus": ["Issue Tracking", "Lightweight Roadmaps", "Speed"],
+      "parityNotes": "Excellent dev velocity UX; strategy layers are lighter",
+      "pricingTier": "Lower/Mid",
+      "notableGapsVsProDuh": ["Strategy→Backlog traceability AI and ops signals merging"]
+    },
+    {
+      "name": "Notion (w/ templates)",
+      "focus": ["Docs/Wiki", "Templates", "Light PM workflows"],
+      "parityNotes": "Flexible; strategy rigor up to teams",
+      "pricingTier": "Lower/Mid",
+      "notableGapsVsProDuh": ["Structured KPIs & agent guardrails across lifecycle"]
+    }
+  ],
+  "opinionatedTake": "ProDuh!’s edge = agentic strategy loop (evidence-in, success-gated out) + lifecycle continuity (Discovery→Strategy→Backlog→Release→Operate)."
+}

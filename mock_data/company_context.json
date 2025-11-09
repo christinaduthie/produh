@@ -1,0 +1,38 @@
+{
+  "product": "ProDuh!",
+  "productId": "PROD-001",
+  "orgTimezone": "America/Chicago",
+  "targetQuarter": "Q1-2026",
+  "strategy": {
+    "northStarIntent": "Reduce PM time-to-insight from scattered sources to a single decision-ready view",
+    "themes": ["Decision Velocity", "Strategic Traceability", "Operational Clarity"]
+  },
+  "currentSystems": [
+    "Atlassian Jira (Cloud)", 
+    "Atlassian Confluence (Cloud)",
+    "Microsoft Teams & Outlook (Microsoft Graph)",
+    "ServiceNow (read-only incidents)",
+    "GitHub (read-only repos/issues)",
+    "Internal CSV/JSON analytics (mock data)"
+  ],
+  "constraints": [
+    "Budget sensitivity: prefer incremental ROI within one quarter",
+    "Compliance: PII redaction in AI outputs",
+    "Security: SSO/SAML required; no public data exfiltration"
+  ],
+  "resourcing": {
+    "availability": { "dev": 2, "qa": 2, "devops": 2, "data": 2 },
+    "skills": ["TypeScript", "React", "Node.js", "AWS (Lambda/API GW/S3)", "CDK", "ETL basics"],
+    "velocityAssumption": "2 devs @ 20 story points/sprint (3-week sprints)"
+  },
+  "budgets": {
+    "quarterCapexUSD": 60000,
+    "expectedOpexUSDPerMonth": 1800,
+    "notes": "Room for 1–2 paid integrations if clear ROI"
+  },
+  "riskGuardrails": [
+    "No customer-identifying data leaves VPC",
+    "All AI prompts must be logged/redacted",
+    "Human-in-the-loop for external comms until stage gate 2"
+  ]
+}
