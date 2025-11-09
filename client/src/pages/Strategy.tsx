@@ -17,6 +17,25 @@ type SolutionResp = {
   createdAt?: string;
 };
 
+type DeckInfo = {
+  audience: string;
+  filename: string;
+  base64: string;
+  slideCount: number;
+  file?: string;
+  confluencePage?: { id?: string; link?: string; error?: string };
+};
+
+type DeckResponse = {
+  decks: DeckInfo[];
+};
+
+const DECK_VARIANTS = [
+  { audience: 'Stakeholders', description: 'Business framing, KPIs, and rollout story.' },
+  { audience: 'Engineers', description: 'Technical scope, dependencies, and readiness gates.' },
+  { audience: 'General', description: 'Narrative you can share with cross-functional teams.' }
+];
+
 export default function Strategy() {
   const { id } = useParams();
   const { product } = useProductContext();
@@ -25,6 +44,9 @@ export default function Strategy() {
   const [loading, setLoading] = useState(true);
   const [gateBusy, setGateBusy] = useState(false);
   const [publishing, setPublishing] = useState(false);
+  const [deckLoading, setDeckLoading] = useState(false);
+  const [decks, setDecks] = useState<DeckResponse | null>(null);
+  const [autoDeckRequested, setAutoDeckRequested] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -34,6 +56,13 @@ export default function Strategy() {
       .catch(() => setSolutionData(null))
       .finally(() => setLoading(false));
   }, [id]);
+
+  useEffect(() => {
+    if (!autoDeckRequested && solutionData?.solution && id && !decks?.decks?.length) {
+      setAutoDeckRequested(true);
+      void generateDecks();
+    }
+  }, [solutionData?.solution, id, autoDeckRequested, decks?.decks]);
 
   async function runGate() {
     if (!id) return;
@@ -48,8 +77,98 @@ export default function Strategy() {
     }
   }
 
+  async function generateDecks() {
+    if (!id) return;
+    setDeckLoading(true);
+    try {
+      const res = await api('/gtm/decks', { productId: id });
+      setDecks(res);
+      toast.show('Strategy decks generated');
+    } catch (err) {
+      toast.show('Failed to create decks', 'error');
+    } finally {
+      setDeckLoading(false);
+    }
+  }
+
+  function downloadDeck(deck: DeckInfo) {
+    if (!deck.base64) return;
+    const byteCharacters = atob(deck.base64);
+    const byteNumbers = new Array(byteCharacters.length);
+    for (let i = 0; i < byteCharacters.length; i += 1) {
+      byteNumbers[i] = byteCharacters.charCodeAt(i);
+    }
+    const byteArray = new Uint8Array(byteNumbers);
+    const blob = new Blob([byteArray], {
+      type: 'application/vnd.openxmlformats-officedocument.presentationml.presentation'
+    });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement('a');
+    anchor.href = url;
+    anchor.download = deck.filename || 'strategy-deck.pptx';
+    document.body.appendChild(anchor);
+    anchor.click();
+    anchor.remove();
+    URL.revokeObjectURL(url);
+  }
+
   const solution = solutionData?.solution || {};
   const metrics = solutionData?.metrics || {};
+
+  const deckCards: Array<{ audience: string; description: string; deck?: DeckInfo }> = decks?.decks?.length
+    ? decks.decks.map((deck) => ({
+        audience: deck.audience,
+        description: `${deck.slideCount} slides`,
+        deck
+      }))
+    : DECK_VARIANTS.map((variant) => ({
+        audience: variant.audience,
+        description: variant.description
+      }));
+
+  const deckSection = (
+    <div className="statement-card" style={{ marginTop: 16 }}>
+      <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div>
+          <p className="eyebrow">Deck Studio</p>
+          <h4 style={{ margin: 0 }}>Stakeholder-ready PPTs</h4>
+        </div>
+        <button className="btn" onClick={generateDecks} disabled={deckLoading || !id}>
+          {deckLoading ? 'Rendering…' : 'Generate Decks'}
+        </button>
+      </header>
+      <p className="note">
+        Auto-builds three variants tailored for stakeholders, engineers, and general audiences so you can share the
+        strategy consistently.
+      </p>
+      <div className="idea-grid">
+        {deckCards.map((card) => {
+          const deck = 'deck' in card ? card.deck : undefined;
+          return (
+            <div key={card.audience} className="idea-card active">
+              <span className="idea-badge active">{card.audience}</span>
+              <h4>{deck?.filename || `${card.audience} deck`}</h4>
+              <p>{card.description}</p>
+              {deck ? (
+                <div style={{ display: 'flex', gap: 8 }}>
+                  <button className="btn primary" type="button" onClick={() => downloadDeck(deck as DeckInfo)}>
+                    Download
+                  </button>
+                  {deck.confluencePage?.link && (
+                    <a className="btn" href={deck.confluencePage.link} target="_blank" rel="noreferrer">
+                      View
+                    </a>
+                  )}
+                </div>
+              ) : (
+                <small>Generate decks to download fresh PPTs.</small>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
 
   return (
     <div className="panel-grid">
@@ -121,9 +240,48 @@ export default function Strategy() {
                 </ul>
               </div>
             )}
+            <div className="statement-card" style={{ marginTop: 16 }}>
+              <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div>
+                  <p className="eyebrow">Deck Studio</p>
+                  <h4 style={{ margin: 0 }}>Stakeholder-ready PPTs</h4>
+                </div>
+                <button className="btn" onClick={generateDecks} disabled={deckLoading || !id}>
+                  {deckLoading ? 'Rendering…' : 'Generate Decks'}
+                </button>
+              </header>
+              <p className="note">
+                Auto-builds three variants tailored for stakeholders, engineers, and general audiences so you can tell
+                the strategy story consistently.
+              </p>
+              <div className="idea-grid">
+                {(decks?.decks || []).map((deck) => (
+                  <div key={deck.audience} className="idea-card active">
+                    <span className="idea-badge active">{deck.audience}</span>
+                    <h4>{deck.filename}</h4>
+                    <p>{deck.slideCount} slides</p>
+                    <div style={{ display: 'flex', gap: 8 }}>
+                      <button className="btn primary" type="button" onClick={() => downloadDeck(deck)}>
+                        Download
+                      </button>
+                      {deck.confluencePage?.link && (
+                        <a className="btn" href={deck.confluencePage.link} target="_blank" rel="noreferrer">
+                          View
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                ))}
+                {!decks?.decks?.length && <p className="note">Generate decks to see PPT bundles.</p>}
+              </div>
+            </div>
+            {deckSection}
           </>
         ) : (
-          <p className="note">Once a problem statement is published, the solution blueprint will appear here.</p>
+          <>
+            <p className="note">Once a problem statement is published, the solution blueprint will appear here.</p>
+            {deckSection}
+          </>
         )}
       </section>
 
@@ -144,6 +302,52 @@ export default function Strategy() {
         </button>
         <p className="note">Upon pass, a Solution v✅ page is published back to Confluence.</p>
       </section>
+    </div>
+  );
+}
+function renderDeckPlaceholder(decks: DeckResponse | null, deckLoading: boolean, downloadDeck: (d: DeckInfo) => void, generateDecks: () => Promise<void> | void) {
+  const deckList = decks?.decks?.length ? decks.decks : null;
+  return (
+    <div className="statement-card" style={{ marginTop: 16 }}>
+      <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div>
+          <p className="eyebrow">Deck Studio</p>
+          <h4 style={{ margin: 0 }}>Stakeholder-ready PPTs</h4>
+        </div>
+        <button className="btn" onClick={generateDecks} disabled={deckLoading}>
+          {deckLoading ? 'Rendering…' : 'Generate Decks'}
+        </button>
+      </header>
+      <p className="note">
+        Auto-builds three variants tailored for stakeholders, engineers, and general audiences so you can share the
+        strategy consistently.
+      </p>
+      <div className="idea-grid">
+        {(deckList || DECK_VARIANTS).map((variant, idx) => {
+          const deck = deckList?.[idx];
+          return (
+            <div key={variant.audience} className="idea-card active">
+              <span className="idea-badge active">{variant.audience}</span>
+              <h4>{deck?.filename || `${variant.audience} deck`}</h4>
+              <p>{variant.description}</p>
+              {deck ? (
+                <div style={{ display: 'flex', gap: 8 }}>
+                  <button className="btn primary" type="button" onClick={() => downloadDeck(deck)}>
+                    Download
+                  </button>
+                  {deck.confluencePage?.link && (
+                    <a className="btn" href={deck.confluencePage.link} target="_blank" rel="noreferrer">
+                      View
+                    </a>
+                  )}
+                </div>
+              ) : (
+                <small>Generate decks to download fresh PPTs.</small>
+              )}
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }

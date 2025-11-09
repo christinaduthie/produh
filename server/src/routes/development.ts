@@ -26,6 +26,18 @@ const toAdf = (lines: string[]) => ({
   }))
 });
 
+type SprintItem = {
+  title: string;
+  type: string;
+  status: 'To Do' | 'In Progress' | 'Done';
+  label: string;
+  owner: string;
+  eta: string;
+  effortHours: number;
+  bugs: number;
+  errors: number;
+};
+
 async function getIssueTypes() {
   const baseUrl = process.env.ATLASSIAN_BASE_URL;
   const email = process.env.ATLASSIAN_EMAIL;
@@ -108,4 +120,73 @@ r.post('/push', async (req,res)=>{
   res.json({ ok: true, keys });
 });
 
+r.get('/sprint', async (req,res)=>{
+  const { productId } = req.query as { productId?: string };
+  if (!productId) return res.status(400).json({ error: 'productId required' });
+  const row = (await q(SQL.DEV_PLAN_SELECT_LATEST, [productId])).rows[0];
+  if (!row) return res.status(400).json({ error: 'Generate a development plan first' });
+  const plan = parseJson(row.plan_json, {});
+  const sprint = buildSprint(plan);
+  res.json(sprint);
+});
+
 export default r;
+
+function buildSprint(plan: any) {
+  const stories = Array.isArray(plan?.stories) ? plan.stories : [];
+  const labels = ['current-sprint', 'backlog'];
+  const statuses: Array<SprintItem['status']> = ['To Do', 'In Progress', 'Done'];
+  const owners = ['PM', 'ENG', 'QA', 'Design'];
+  const allItems: SprintItem[] = stories.map((story: any, idx: number) => {
+    const label = labels[idx % labels.length];
+    const status = statuses[idx % statuses.length];
+    const owner = owners[idx % owners.length];
+    const type = idx % 4 === 0 ? 'Feature' : 'Story';
+    const eta = new Date(Date.now() + (idx + 2) * 86400000).toISOString();
+    return {
+      title: story?.title || `Story ${idx + 1}`,
+      type,
+      status,
+      label,
+      owner,
+      eta,
+      effortHours: 6 + idx * 2,
+      bugs: status === 'Done' ? 0 : idx % 2,
+      errors: status === 'Done' ? 0 : idx % 3 ? 1 : 0
+    };
+  });
+  const sprintItems = allItems.filter((item) => item.label === 'current-sprint');
+  const statusSummary = sprintItems.reduce(
+    (acc, item) => {
+      if (item.status === 'To Do') acc.todo += 1;
+      if (item.status === 'In Progress') acc.inProgress += 1;
+      if (item.status === 'Done') acc.done += 1;
+      return acc;
+    },
+    { todo: 0, inProgress: 0, done: 0 }
+  );
+  const issueSummary = sprintItems.reduce(
+    (acc, item) => {
+      acc.bugs += item.bugs;
+      acc.errors += item.errors;
+      return acc;
+    },
+    { bugs: 0, errors: 0 }
+  );
+  const timeline = [
+    { label: 'Sprint -1', planned: 40, actual: 42 },
+    { label: 'Sprint 0', planned: 40, actual: 38 },
+    { label: 'Sprint 1', planned: 40, actual: 46 }
+  ];
+  const utilization = {
+    hoursCommitted: sprintItems.reduce((sum, item) => sum + item.effortHours, 0),
+    hoursUsed: sprintItems.reduce((sum, item) => sum + Math.round(item.effortHours * 0.85), 0)
+  };
+  return {
+    items: sprintItems,
+    statusSummary,
+    issueSummary,
+    timeline,
+    utilization
+  };
+}

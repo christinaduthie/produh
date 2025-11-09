@@ -14,9 +14,30 @@ import Release from './pages/Release';
 import Operate from './pages/Operate';
 
 const NAV = [
-  { to: '/', label: 'Portfolio', emoji: '🧭' },
+  { to: '/', label: 'Projects', emoji: '🧭' },
   { to: '/integrations', label: 'Integrations', emoji: '🔌' }
 ];
+
+const BellIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M12 22a2 2 0 0 0 2-2H10a2 2 0 0 0 2 2Z" />
+    <path d="M18 16v-4a6 6 0 1 0-12 0v4l-1.8 2.7c-.3.45.01 1.05.56 1.05H19.3c.55 0 .86-.6.56-1.05Z" />
+  </svg>
+);
+
+const SettingsIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="3" />
+    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z" />
+  </svg>
+);
+
+const SearchIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="11" cy="11" r="6" />
+    <line x1="16" y1="16" x2="21" y2="21" />
+  </svg>
+);
 
 export default function App() {
   const [theme, setTheme] = useState<'light' | 'dark'>(() => {
@@ -36,15 +57,18 @@ export default function App() {
     <div className="shell">
       <header className="shell-header">
         <div>
-          <p className="eyebrow">ProDuh Command</p>
-          <div className="brand">PM Lifecycle Control Center</div>
+          <p className="eyebrow">PM Lifecycle Management</p>
+          <div className="brand">ProDuh! Command Control</div>
         </div>
         <div className="shell-meta">
-          <span className="pill success">Live Data (Neon)</span>
-          <span className="pill">Gemini Drafting</span>
-          <span className="pill">Agentic Gates Enabled</span>
+          <input className="header-search" placeholder="Search projects, KPIs, people..." aria-label="Search" />
+          <button className="icon-btn" aria-label="Notifications">🔔</button>
+          <button className="icon-btn" aria-label="Settings">⚙️</button>
           <button className="icon-btn" onClick={toggleTheme} aria-label="Toggle theme">
             {theme === 'light' ? '🌙' : '☀️'}
+          </button>
+          <button className="btn logout-btn header-logout" type="button">
+            Logout
           </button>
         </div>
       </header>
