@@ -1,0 +1,23 @@
+version: '3.9'
+
+services:
+  db:
+    image: postgres:15
+    container_name: produh-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: produh
+      POSTGRES_PASSWORD: produh
+      POSTGRES_DB: produh
+    ports:
+      - '5432:5432'
+    volumes:
+      - produh-pg:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U produh']
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+volumes:
+  produh-pg:
