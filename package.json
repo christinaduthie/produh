@@ -1,0 +1,6 @@
+{
+  "scripts": {
+    "phase1:summarize": "node scripts/phase1_summarize.mjs",
+    "phase1:validate": "node mock_data/validate.js"
+  }
+}
