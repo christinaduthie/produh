@@ -1,0 +1,111 @@
+[
+  {
+    "pageId": "CONF-001",
+    "spaceKey": "PRODUH",
+    "title": "PRD v0 — ProDuh! Discovery",
+    "author_p_id": "U-001",
+    "createdAt": "2025-11-01T09:30:00-06:00",
+    "lastUpdatedAt": "2025-11-01T15:10:00-06:00",
+    "summary": "Working PRD v0 capturing the initial problem statement, target user, MVP scope, KPIs, and evidence links gathered from email, chat, and the workshop.",
+    "problemStatements": [
+      "Teams cannot connect strategy to daily work, so outputs don’t reflect goals.",
+      "High-level decks exist, but dev teams can’t see the ‘why’ in tickets; weekly updates are manual."
+    ],
+    "userSegments": [
+      "Product Managers",
+      "Tech Leads",
+      "Support/Customer Success Managers",
+      "Delivery Managers"
+    ],
+    "jobsToBeDone": [
+      "Aggregate discovery inputs (emails, chats, meetings) into one place.",
+      "Generate crisp goals/KPIs from evidence without heavy process changes.",
+      "Show traceability between goals/KPIs and day-to-day work.",
+      "Produce a weekly narrative that explains progress and next steps."
+    ],
+    "evidenceLinks": {
+      "emailMessageIds": ["EMSG-1001", "EMSG-1002", "EMSG-1003", "EMSG-1004", "EMSG-1005"],
+      "chatThreadIds": ["CHAT-1001"],
+      "meetingIds": ["MTG-002"],
+      "incidentIds": [],
+      "githubIssueIds": [],
+      "jiraKeys": []
+    },
+    "attachments": [
+      "confluence://attachments/conf-001/problem-target-user.png",
+      "confluence://attachments/conf-001/mvp-scope-checklist.png"
+    ]
+  },
+  {
+    "pageId": "CONF-002",
+    "spaceKey": "PRODUH",
+    "title": "Open Questions & Decisions Log — ProDuh!",
+    "author_p_id": "U-001",
+    "createdAt": "2025-11-01T15:20:00-06:00",
+    "lastUpdatedAt": "2025-11-01T16:05:00-06:00",
+    "summary": "Single source for unresolved questions, recorded decisions, and assumptions for the ProDuh! MVP.",
+    "openQuestions": [
+      {
+        "id": "Q-001",
+        "text": "How opinionated should the app be about workflows (e.g., required goal linkage before starting work)?",
+        "proposedNextStep": "Validate with two design partners during discovery interviews.",
+        "links": { "emailMessageIds": ["EMSG-1002"], "chatThreadIds": ["CHAT-1001"], "meetingIds": ["MTG-002"] }
+      },
+      {
+        "id": "Q-002",
+        "text": "What is the minimum integration set that provides value without write permissions?",
+        "proposedNextStep": "Pilot with Confluence/Jira read-only; measure narrative freshness and goal-linkage uplift.",
+        "links": { "emailMessageIds": ["EMSG-1005"], "chatThreadIds": ["CHAT-1001"], "meetingIds": ["MTG-002"] }
+      },
+      {
+        "id": "Q-003",
+        "text": "How will teams provide KPI baselines when analytics are weak or siloed?",
+        "proposedNextStep": "Ship CSV import + manual baselines; evaluate later swap to connectors.",
+        "links": { "emailMessageIds": ["EMSG-1004"], "chatThreadIds": ["CHAT-1001"], "meetingIds": ["MTG-002"] }
+      }
+    ],
+    "decisions": [
+      {
+        "id": "D-001",
+        "text": "Target user: PM/Tech Lead pair; Problem: ‘Strategy isn’t connected to daily work’.",
+        "rationale": "Consistent stakeholder feedback and workshop alignment.",
+        "links": { "emailMessageIds": ["EMSG-1002"], "chatThreadIds": ["CHAT-1001"], "meetingIds": ["MTG-002"] }
+      },
+      {
+        "id": "D-002",
+        "text": "MVP scope: Evidence intake → Goals/KPIs draft → Traceability view → Weekly narrative.",
+        "rationale": "Fastest path to demonstrate strategy→work linkage.",
+        "links": { "emailMessageIds": ["EMSG-1003"], "chatThreadIds": ["CHAT-1001"], "meetingIds": ["MTG-002"] }
+      },
+      {
+        "id": "D-003",
+        "text": "Integrations: Confluence/Jira read-only for v1.",
+        "rationale": "Minimize risk and setup complexity; still delivers value.",
+        "links": { "emailMessageIds": ["EMSG-1005"], "chatThreadIds": ["CHAT-1001"], "meetingIds": ["MTG-002"] }
+      }
+    ],
+    "assumptions": [
+      {
+        "id": "A-001",
+        "text": "Teams can manually provide KPI baselines if analytics is missing.",
+        "riskIfWrong": "Narratives feel subjective; mitigation: provide CSV template and examples."
+      },
+      {
+        "id": "A-002",
+        "text": "Read-only mode is enough to prove value in the first demo.",
+        "riskIfWrong": "Perceived as ‘viewer only’; mitigation: fast-follow write-back for goal-linking."
+      }
+    ],
+    "evidenceLinks": {
+      "emailMessageIds": ["EMSG-1001", "EMSG-1002", "EMSG-1003", "EMSG-1004", "EMSG-1005"],
+      "chatThreadIds": ["CHAT-1001"],
+      "meetingIds": ["MTG-002"],
+      "incidentIds": [],
+      "githubIssueIds": [],
+      "jiraKeys": []
+    },
+    "attachments": [
+      "confluence://attachments/conf-002/decision-principles.png"
+    ]
+  }
+]

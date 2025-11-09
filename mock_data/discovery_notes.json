@@ -1,0 +1,112 @@
+[
+  {
+    "id": "DN-1001",
+    "productId": "PROD-001",
+    "sourceType": "email",
+    "sourceId": "EMSG-1001",
+    "owner_p_id": "U-001",
+    "date": "2025-11-01T08:42:11-06:00",
+    "tags": ["stakeholder-voice", "problem-signal"],
+    "summary": "Stakeholders report a gap between strategy decks and tickets; want a simple way to see why current work matters.",
+    "evidenceLinks": { "emailMessageIds": ["EMSG-1001"], "chatThreadIds": ["CHAT-1001"], "meetingIds": [], "confluenceIds": ["CONF-001"], "incidentIds": [], "githubIssueIds": [], "jiraKeys": [] }
+  },
+  {
+    "id": "DN-1002",
+    "productId": "PROD-001",
+    "sourceType": "email",
+    "sourceId": "EMSG-1002",
+    "owner_p_id": "U-001",
+    "date": "2025-11-01T09:06:47-06:00",
+    "tags": ["proposal", "solution-idea"],
+    "summary": "ProDuh! concept: capture evidence → generate goals/KPIs → link to work → produce weekly narrative.",
+    "evidenceLinks": { "emailMessageIds": ["EMSG-1002"], "chatThreadIds": ["CHAT-1001"], "meetingIds": ["MTG-002"], "confluenceIds": ["CONF-001"], "incidentIds": [], "githubIssueIds": [], "jiraKeys": [] }
+  },
+  {
+    "id": "DN-1003",
+    "productId": "PROD-001",
+    "sourceType": "email",
+    "sourceId": "EMSG-1003",
+    "owner_p_id": "U-002",
+    "date": "2025-11-01T09:28:10-06:00",
+    "tags": ["constraints", "mvp"],
+    "summary": "Scope guardrails: read-only integrations, bring-your-own taxonomy, KPIs must be first-class and attached to work.",
+    "evidenceLinks": { "emailMessageIds": ["EMSG-1003"], "chatThreadIds": ["CHAT-1001"], "meetingIds": ["MTG-002"], "confluenceIds": ["CONF-001"], "incidentIds": [], "githubIssueIds": [], "jiraKeys": [] }
+  },
+  {
+    "id": "DN-1004",
+    "productId": "PROD-001",
+    "sourceType": "email",
+    "sourceId": "EMSG-1004",
+    "owner_p_id": "U-008",
+    "date": "2025-11-01T09:54:02-06:00",
+    "tags": ["data", "kpi-design"],
+    "summary": "Weak analytics at customers → allow manual baselines + CSV; prioritize trend deltas and narrative freshness KPI.",
+    "evidenceLinks": { "emailMessageIds": ["EMSG-1004"], "chatThreadIds": ["CHAT-1001"], "meetingIds": ["MTG-002"], "confluenceIds": ["CONF-001"], "incidentIds": [], "githubIssueIds": [], "jiraKeys": [] }
+  },
+  {
+    "id": "DN-1005",
+    "productId": "PROD-001",
+    "sourceType": "email",
+    "sourceId": "EMSG-1005",
+    "owner_p_id": "U-006",
+    "date": "2025-11-01T10:12:30-06:00",
+    "tags": ["approval", "workshop"],
+    "summary": "Eng manager approves workshop with a narrow MVP focus and explicit decisions to make.",
+    "evidenceLinks": { "emailMessageIds": ["EMSG-1005"], "chatThreadIds": ["CHAT-1001"], "meetingIds": ["MTG-002"], "confluenceIds": ["CONF-001"], "incidentIds": [], "githubIssueIds": [], "jiraKeys": [] }
+  },
+  {
+    "id": "DN-1006",
+    "productId": "PROD-001",
+    "sourceType": "chat",
+    "sourceId": "CHAT-1001",
+    "owner_p_id": "U-001",
+    "date": "2025-11-01T11:15:40-06:00",
+    "tags": ["casual-context", "stakeholder-map"],
+    "summary": "Casual team chat clarifies stakeholder tensions: Sales wants custom, Ops wants stability, Compliance wants control, Execs want pace.",
+    "evidenceLinks": { "emailMessageIds": ["EMSG-1001"], "chatThreadIds": ["CHAT-1001"], "meetingIds": [], "confluenceIds": ["CONF-001"], "incidentIds": [], "githubIssueIds": [], "jiraKeys": [] }
+  },
+  {
+    "id": "DN-1007",
+    "productId": "PROD-001",
+    "sourceType": "meeting",
+    "sourceId": "MTG-002",
+    "owner_p_id": "U-001",
+    "date": "2025-11-01T14:49:57-06:00",
+    "tags": ["decision", "problem-statement"],
+    "summary": "Approved problem: \"Teams cannot connect strategy to daily work.\" Target user: PM/Tech Lead pair.",
+    "evidenceLinks": { "emailMessageIds": ["EMSG-1002"], "chatThreadIds": ["CHAT-1001"], "meetingIds": ["MTG-002"], "confluenceIds": ["CONF-001"], "incidentIds": [], "githubIssueIds": [], "jiraKeys": [] }
+  },
+  {
+    "id": "DN-1008",
+    "productId": "PROD-001",
+    "sourceType": "meeting",
+    "sourceId": "MTG-002",
+    "owner_p_id": "U-002",
+    "date": "2025-11-01T14:49:57-06:00",
+    "tags": ["mvp-scope"],
+    "summary": "MVP = Evidence intake → Goals/KPIs draft → Traceability view → Weekly narrative; read-only integrations.",
+    "evidenceLinks": { "emailMessageIds": ["EMSG-1003"], "chatThreadIds": ["CHAT-1001"], "meetingIds": ["MTG-002"], "confluenceIds": ["CONF-001"], "incidentIds": [], "githubIssueIds": [], "jiraKeys": [] }
+  },
+  {
+    "id": "DN-1009",
+    "productId": "PROD-001",
+    "sourceType": "meeting",
+    "sourceId": "MTG-002",
+    "owner_p_id": "U-008",
+    "date": "2025-11-01T14:49:57-06:00",
+    "tags": ["kpis"],
+    "summary": "KPIs v1: % of tickets linked to a goal; Narrative freshness (days); Cycle time from discovery to delivery.",
+    "evidenceLinks": { "emailMessageIds": ["EMSG-1004"], "chatThreadIds": ["CHAT-1001"], "meetingIds": ["MTG-002"], "confluenceIds": ["CONF-001"], "incidentIds": [], "githubIssueIds": [], "jiraKeys": [] }
+  },
+  {
+    "id": "DN-1010",
+    "productId": "PROD-001",
+    "sourceType": "meeting",
+    "sourceId": "MTG-002",
+    "owner_p_id": "U-006",
+    "date": "2025-11-01T14:49:57-06:00",
+    "tags": ["principles"],
+    "summary": "Decision principles: If a feature doesn’t clarify the 'why' or the next step, it’s out of v1.",
+    "evidenceLinks": { "emailMessageIds": ["EMSG-1005"], "chatThreadIds": ["CHAT-1001"], "meetingIds": ["MTG-002"], "confluenceIds": ["CONF-001"], "incidentIds": [], "githubIssueIds": [], "jiraKeys": [] }
+  }
+]

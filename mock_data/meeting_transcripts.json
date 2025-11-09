@@ -1,0 +1,36 @@
+[
+  {
+    "meetingId": "MTG-002",
+    "title": "ProDuh! Proposal Workshop – Problem, Target User, MVP",
+    "scheduledStart": "2025-11-01T14:00:00-06:00",
+    "actualStart": "2025-11-01T14:02:17-06:00",
+    "durationMinutes": 58,
+    "attendees": ["U-001", "U-002", "U-003", "U-004", "U-006", "U-007", "U-008"],
+    "transcript": [
+      { "ts": "00:00:06", "speaker_p_id": "U-001", "text": "Goal today: leave with a crisp problem statement, a target user, and a thinnest-possible MVP." },
+      { "ts": "00:01:15", "speaker_p_id": "U-007", "text": "From CS calls: teams have decks with goals but devs can’t see the why in tickets. Weekly updates are manual." },
+      { "ts": "00:03:02", "speaker_p_id": "U-006", "text": "We need focus. If we do everything, we’ll do nothing well. What’s the first painful gap we solve?" },
+      { "ts": "00:04:10", "speaker_p_id": "U-002", "text": "Foggy problem definition. We enforce one problem + one target user. Everything else hangs off that." },
+      { "ts": "00:06:22", "speaker_p_id": "U-008", "text": "Data is weak. Propose allowing manual KPI baselines and CSV import, then compute deltas and trends." },
+      { "ts": "00:09:48", "speaker_p_id": "U-003", "text": "Frontend can show a KPI ribbon on every story card. Click reveals the narrative of why it matters." },
+      { "ts": "00:13:20", "speaker_p_id": "U-004", "text": "Backend MVP can be a small ingestion service and a summarizer. Read-only to Jira/Confluence for now." },
+      { "ts": "00:18:55", "speaker_p_id": "U-001", "text": "Draft problem statement: \"Teams can’t connect strategy to daily work, so outputs don’t reflect goals.\" Target user: PM/Tech Lead pair." },
+      { "ts": "00:24:31", "speaker_p_id": "U-006", "text": "Measure success by % of tickets linked to a goal and weekly narrative freshness. Keep scope small." },
+      { "ts": "00:31:44", "speaker_p_id": "U-002", "text": "MVP features: Evidence intake → Goals/KPIs draft → Traceability view → Weekly narrative." },
+      { "ts": "00:37:05", "speaker_p_id": "U-008", "text": "KPIs v1: 1) % issues linked to a goal, 2) Days since last narrative, 3) Cycle time from discovery to delivery." },
+      { "ts": "00:43:19", "speaker_p_id": "U-001", "text": "Decision principles: if a feature doesn’t clarify the why or the next step, it’s out for v1." },
+      { "ts": "00:49:57", "speaker_p_id": "U-006", "text": "Approved to continue. Keep read-only integrations; prove value with narratives and traceability." }
+    ],
+    "decisions": [
+      "Problem statement and target user approved.",
+      "MVP scope: Evidence intake → Goals/KPIs draft → Traceability → Weekly narrative.",
+      "Integrations: Confluence/Jira read-only in v1.",
+      "KPIs: goal linkage %, narrative freshness, discovery→delivery cycle time."
+    ],
+    "actionItems": [
+      { "id": "AI-1001", "owner_p_id": "U-001", "summary": "Update CONF-001 with approved problem, user, MVP, KPIs.", "due": "2025-11-02T18:00:00-06:00", "links": { "jiraKeys": [], "confluenceIds": ["CONF-001"], "emailMessageIds": ["EMSG-1002"] } },
+      { "id": "AI-1002", "owner_p_id": "U-002", "summary": "Define minimal data model for goals, KPIs, and narratives.", "due": "2025-11-02T18:00:00-06:00", "links": { "jiraKeys": [], "confluenceIds": ["CONF-001"], "emailMessageIds": ["EMSG-1003"] } },
+      { "id": "AI-1003", "owner_p_id": "U-008", "summary": "Provide CSV template + example baselines for MVP KPIs.", "due": "2025-11-03T12:00:00-06:00", "links": { "jiraKeys": [], "confluenceIds": ["CONF-001"], "emailMessageIds": ["EMSG-1004"] } }
+    ]
+  }
+]
