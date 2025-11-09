@@ -1,0 +1,72 @@
+[
+  {
+    "kpiId": "KPI-001",
+    "name": "Goal Linkage %",
+    "unit": "percent",
+    "baseline": 18,
+    "target": 60,
+    "timeframe": "6w",
+    "ownerRole": "PM",
+    "measurementPlan": {
+      "formula": "stories_with_goal / total_active_stories * 100",
+      "sourceMapping": ["jira (read-only)", "confluence goals (read-only)", "manual CSV if missing"],
+      "notes": "Proxy in Phase 1: assume total_active_stories=120, stories_with_goal=22 from recent samples."
+    }
+  },
+  {
+    "kpiId": "KPI-002",
+    "name": "Narrative Freshness (days)",
+    "unit": "days",
+    "baseline": 14,
+    "target": 7,
+    "timeframe": "4w",
+    "ownerRole": "PM",
+    "measurementPlan": {
+      "formula": "days_since_last_weekly_narrative",
+      "sourceMapping": ["confluence weekly page timestamps", "email send dates"],
+      "notes": "Counts calendar days between latest narrative and today."
+    }
+  },
+  {
+    "kpiId": "KPI-003",
+    "name": "Discovery→Delivery Cycle Time",
+    "unit": "days",
+    "baseline": 28,
+    "target": 21,
+    "timeframe": "1q",
+    "ownerRole": "Tech Lead",
+    "measurementPlan": {
+      "formula": "median(days from problem-note to first prod release)",
+      "sourceMapping": ["discovery_notes.json dates", "release notes (later)"],
+      "notes": "Use discovery_notes as seed timestamps until release data exists."
+    }
+  },
+  {
+    "kpiId": "KPI-004",
+    "name": "Decision Latency",
+    "unit": "days",
+    "baseline": 10,
+    "target": 5,
+    "timeframe": "6w",
+    "ownerRole": "Eng Manager",
+    "measurementPlan": {
+      "formula": "median(days from open question to logged decision)",
+      "sourceMapping": ["CONF-002 openQuestions + decisions"],
+      "notes": "Leverages CONF-002; compute per item then take median."
+    }
+  },
+  {
+    "kpiId": "KPI-005",
+    "name": "Stakeholder Alignment Index",
+    "unit": "1-5 scale",
+    "baseline": 2.6,
+    "target": 4.0,
+    "timeframe": "1q",
+    "ownerRole": "PM",
+    "measurementPlan": {
+      "formula": "average(self-reported alignment by Sales, Ops, Compliance, Execs)",
+      "sourceMapping": ["monthly pulse (manual CSV)"],
+      "notes": "Lightweight survey: 1=low, 5=high; Phase 1 via CSV."
+    }
+  }
+]

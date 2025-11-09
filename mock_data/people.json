@@ -1,0 +1,66 @@
+[
+  {
+    "p_id": "U-001",
+    "name": "Ubaidullah Khan",
+    "email": "ubaidullah.khan@produhlab.local",
+    "role": "PM",
+    "department": "Product",
+    "timezone": "America/Chicago"
+  },
+  {
+    "p_id": "U-002",
+    "name": "Christina Ortiz",
+    "email": "christina.ortiz@produhlab.local",
+    "role": "Tech Lead",
+    "department": "Engineering",
+    "timezone": "America/Chicago"
+  },
+  {
+    "p_id": "U-003",
+    "name": "John Doe",
+    "email": "john.doe@produhlab.local",
+    "role": "Frontend Eng",
+    "department": "Engineering",
+    "timezone": "America/Chicago"
+  },
+  {
+    "p_id": "U-004",
+    "name": "Joseph Duthie",
+    "email": "joseph.duthie@produhlab.local",
+    "role": "Backend Eng",
+    "department": "Engineering",
+    "timezone": "America/Chicago"
+  },
+  {
+    "p_id": "U-005",
+    "name": "Khichu Chai",
+    "email": "khichu.chai@produhlab.local",
+    "role": "Cloud/DevOps",
+    "department": "Platform",
+    "timezone": "America/Chicago"
+  },
+  {
+    "p_id": "U-006",
+    "name": "Mary Smith",
+    "email": "mary.smith@produhlab.local",
+    "role": "Eng Manager",
+    "department": "Engineering",
+    "timezone": "America/Chicago"
+  },
+  {
+    "p_id": "U-007",
+    "name": "Shahrukh Khan",
+    "email": "shahrukh.khan@produhlab.local",
+    "role": "CS Representative",
+    "department": "Customer Success",
+    "timezone": "America/Chicago"
+  },
+  {
+    "p_id": "U-008",
+    "name": "Bobby Deol",
+    "email": "bobby.deol@produhlab.local",
+    "role": "Data Analyst",
+    "department": "Analytics",
+    "timezone": "America/Chicago"
+  }
+]

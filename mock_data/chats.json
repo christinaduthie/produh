@@ -1,0 +1,59 @@
+[
+  {
+    "channelId": "CHAN-PRODUH",
+    "channelName": "produh-proposal",
+    "threadId": "CHAT-1001",
+    "messages": [
+      {
+        "msgId": "CMSG-2001",
+        "author_p_id": "U-001",
+        "text": "Working title: ProDuh! A command center that keeps strategy glued to day-to-day.",
+        "sentAt": "2025-11-01T11:03:12-06:00",
+        "reactions": ["sparkles"],
+        "mentions": ["U-002", "U-006"],
+        "links": [],
+        "references": { "emailMessageIds": ["EMSG-1002"], "jiraKeys": [], "confluenceIds": ["CONF-001"], "meetingIds": ["MTG-002"] }
+      },
+      {
+        "msgId": "CMSG-2002",
+        "author_p_id": "U-002",
+        "text": "V1 must solve foggy problem definitions. Let’s force a single crisp problem + target user per product.",
+        "sentAt": "2025-11-01T11:05:44-06:00",
+        "reactions": ["thumbs_up"],
+        "mentions": [],
+        "links": [],
+        "references": { "emailMessageIds": ["EMSG-1003"], "jiraKeys": [], "confluenceIds": ["CONF-001"], "meetingIds": ["MTG-002"] }
+      },
+      {
+        "msgId": "CMSG-2003",
+        "author_p_id": "U-007",
+        "text": "Stakeholders = Sales (custom asks), Ops (stability), Compliance (control), Execs (innovation). PMs get stuck in priority tennis.",
+        "sentAt": "2025-11-01T11:09:01-06:00",
+        "reactions": [],
+        "mentions": [],
+        "links": [],
+        "references": { "emailMessageIds": ["EMSG-1001"], "jiraKeys": [], "confluenceIds": ["CONF-001"], "meetingIds": [] }
+      },
+      {
+        "msgId": "CMSG-2004",
+        "author_p_id": "U-008",
+        "text": "Data is weak at customers. Suggest CSV ingest for baselines + trend deltas. Narrative freshness as a KPI is neat.",
+        "sentAt": "2025-11-01T11:12:28-06:00",
+        "reactions": ["eyes"],
+        "mentions": [],
+        "links": [],
+        "references": { "emailMessageIds": ["EMSG-1004"], "jiraKeys": [], "confluenceIds": ["CONF-001"], "meetingIds": ["MTG-002"] }
+      },
+      {
+        "msgId": "CMSG-2005",
+        "author_p_id": "U-006",
+        "text": "Constraint: minimal integrations in MVP. Prefer Confluence/Jira read-only first.",
+        "sentAt": "2025-11-01T11:15:40-06:00",
+        "reactions": ["white_check_mark"],
+        "mentions": [],
+        "links": [],
+        "references": { "emailMessageIds": [], "jiraKeys": [], "confluenceIds": ["CONF-001"], "meetingIds": ["MTG-002"] }
+      }
+    ]
+  }
+]
