@@ -69,12 +69,21 @@ type ProblemStatementRow = {
   created_at: string;
 };
 
+type DevelopmentPlanRow = {
+  id: string;
+  product_id: string;
+  plan_json: any;
+  jira_keys?: any;
+  created_at: string;
+};
+
 const mockTables: {
   products: ProductRow[];
   signals: SignalRow[];
   briefs: BriefRow[];
   solutions: SolutionRow[];
   backlogs: BacklogRow[];
+  developmentPlans: DevelopmentPlanRow[];
   problemStatements: ProblemStatementRow[];
 } = {
   products: [],
@@ -82,6 +91,7 @@ const mockTables: {
   briefs: [],
   solutions: [],
   backlogs: [],
+  developmentPlans: [],
   problemStatements: []
 };
 
@@ -122,6 +132,9 @@ export const SQL = {
   BACKLOG_INSERT: 'INSERT INTO backlog (id, product_id, json) VALUES ($1,$2,$3)',
   BACKLOG_SELECT_LATEST: 'SELECT * FROM backlog WHERE product_id=$1 ORDER BY created_at DESC LIMIT 1',
   BACKLOG_UPDATE_KEYS: 'UPDATE backlog SET jira_keys=$1 WHERE id=$2',
+  DEV_PLAN_INSERT: 'INSERT INTO development_plan (id, product_id, plan_json) VALUES ($1,$2,$3)',
+  DEV_PLAN_SELECT_LATEST: 'SELECT * FROM development_plan WHERE product_id=$1 ORDER BY created_at DESC LIMIT 1',
+  DEV_PLAN_UPDATE_JIRA: 'UPDATE development_plan SET jira_keys=$1 WHERE id=$2',
   PROBLEM_STATEMENT_INSERT:
     'INSERT INTO problem_statement (id, product_id, statement, html, confluence_page_id) VALUES ($1,$2,$3,$4,$5)',
   PROBLEM_STATEMENT_SELECT_LATEST: 'SELECT * FROM problem_statement WHERE product_id=$1 ORDER BY created_at DESC LIMIT 1',
@@ -200,6 +213,13 @@ const SCHEMA_TABLES = [
     json JSONB DEFAULT '{}'::jsonb,
     jira_keys JSONB,
     mirror_confluence_page_id TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  )`,
+  `CREATE TABLE IF NOT EXISTS development_plan (
+    id TEXT PRIMARY KEY,
+    product_id TEXT REFERENCES product(id),
+    plan_json JSONB DEFAULT '{}'::jsonb,
+    jira_keys JSONB,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
   )`,
   `CREATE TABLE IF NOT EXISTS problem_statement (
@@ -388,6 +408,23 @@ function handleMockQuery(sql: string, params: any[]): any[] {
     }
     case SQL.BACKLOG_UPDATE_KEYS: {
       const row = mockTables.backlogs.find((b) => b.id === params[1]);
+      if (row) row.jira_keys = parseJson(params[0], {});
+      return [];
+    }
+    case SQL.DEV_PLAN_INSERT:
+      mockTables.developmentPlans.push({
+        id: params[0],
+        product_id: params[1],
+        plan_json: parseJson(params[2], {}),
+        created_at: nowIso()
+      });
+      return [];
+    case SQL.DEV_PLAN_SELECT_LATEST: {
+      const entry = mockTables.developmentPlans.filter((p) => p.product_id === params[0]).pop();
+      return entry ? [clone(entry)] : [];
+    }
+    case SQL.DEV_PLAN_UPDATE_JIRA: {
+      const row = mockTables.developmentPlans.find((p) => p.id === params[1]);
       if (row) row.jira_keys = parseJson(params[0], {});
       return [];
     }

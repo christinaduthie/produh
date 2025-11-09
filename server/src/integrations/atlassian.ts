@@ -69,3 +69,11 @@ outwardIssue: { key: outward }
 };
 await axios.post(url, body, { auth });
 }
+
+export async function jiraSearch(jql: string, fields: string[] = [], maxResults = 200){
+const url = `${ENV.ATLASSIAN.BASE_URL}/rest/api/3/search`;
+const params: Record<string, any> = { jql, maxResults };
+if (fields.length) params.fields = fields.join(',');
+const { data } = await axios.get(url, { auth, params });
+return data;
+}

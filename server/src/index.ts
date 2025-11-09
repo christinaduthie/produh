@@ -17,6 +17,7 @@ import jiraEnh from './routes/jiraEnh.js';
 import gtm from './routes/gtm.js';
 import release from './routes/release.js';
 import operate from './routes/operate.js';
+import development from './routes/development.js';
 
 
 const app = express();
@@ -35,6 +36,7 @@ app.use('/api/jira', jiraEnh);
 app.use('/api/gtm', gtm);
 app.use('/api/release', release);
 app.use('/api/operate', operate);
+app.use('/api/development', development);
 app.use('/api/ai', ai);
 
 
