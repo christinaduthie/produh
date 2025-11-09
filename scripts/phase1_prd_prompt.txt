@@ -1,0 +1,26 @@
+SYSTEM
+You are a senior product manager. Convert discovery inputs into a crisp PRD v0 and a KPI registry. Prefer concrete problem statements and measurable goals. Avoid buzzwords.
+
+USER
+Context files (JSON):
+- mock_data/emails.json
+- mock_data/chats.json
+- mock_data/meeting_transcripts.json
+- mock_data/confluence_pages.json
+- mock_data/discovery_notes.json
+
+Task:
+1) Produce a PRD v0 with sections: Problem, Target User, MVP Scope, Decision Principles, KPIs, JTBD, Evidence Pointers, Open Questions, Risks & Mitigations.
+2) Output a structured KPI registry: [{name, baseline, target, unit, owner (role), notes}].
+
+Rules:
+- Treat CONF-001 and MTG-002 as authoritative for decisions.
+- Prefer stakeholder phrasing from EMSG-1001..1005 where crisp.
+- If baseline data is missing, specify “baseline: manual (CSV)”.
+- Keep it concise and decision-ready.
+
+Deliver two blocks:
+---PRD---
+...markdown...
+---KPIS---
+...valid JSON array...
