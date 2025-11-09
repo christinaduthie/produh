@@ -1,294 +1,197 @@
-# ProDuh!
+# ProDuh! — The “duh” way to ship smarter
 
-An opinionated, full‑stack Product Management co‑pilot that helps you go from *idea → strategy → backlog → execution*. It provides AI‑assisted discovery, strategy briefs, and Jira issue automation in one workflow.
-
-> **Monorepo layout:** `client/` (React) + `server/` (TypeScript/Node) + shared project scripts.
-
----
-
-## Table of contents
-- [Features](#features)
-- [Architecture](#architecture)
-- [Tech stack](#tech-stack)
-- [Getting started](#getting-started)
-  - [Prereqs](#prereqs)
-  - [Environment variables](#environment-variables)
-  - [Local setup](#local-setup)
-- [Running the apps](#running-the-apps)
-- [Jira integration](#jira-integration)
-- [AI (Gemini / Vertex AI) integration](#ai-gemini--vertex-ai-integration)
-- [API](#api)
-- [Project scripts](#project-scripts)
-- [Conventions](#conventions)
-- [Troubleshooting](#troubleshooting)
-- [Contributing](#contributing)
-- [License](#license)
+> **TL;DR**  
+> End‑to‑end Product Management co‑pilot: **Discovery → Strategy → Development → Testing → Release → Go‑to‑Market → Operate → Deprecation**.  
+> AI‑assisted strategy, App Agnostic, and an always‑on **operate loop**—with the **human in the loop**.
 
 ---
 
-## Features
-- **AI Discovery & Strategy**: Generate product briefs, user problems, success metrics, and first‑cut roadmaps from prompts.
-- **Backlog Shaping**: Turn strategy output into epics, stories, and subtasks.
-- **Jira Automation**: Create Story/Sub‑task issues directly in your Jira project.
-- **PM Workbench**: A “Discovery” screen to iterate on prompts and compare AI suggestions.
-
-> Note: File/paths referenced below are based on the current codebase: `server/src/ai/gemini.ts`, `server/src/routes/discover.ts`, `server/src/db/index.ts`, `client/src/pages/Discovery.tsx`.
+## Table of Contents
+- [ProDuh! — The “duh” way to ship smarter](#produh--the-duh-way-to-ship-smarter)
+  - [Table of Contents](#table-of-contents)
+  - [Problem](#problem)
+  - [Solution](#solution)
+  - [Key Features](#key-features)
+  - [Architecture](#architecture)
+  - [Monorepo Layout](#monorepo-layout)
+  - [Tech Stack](#tech-stack)
+  - [Getting Started](#getting-started)
+    - [Prerequisites](#prerequisites)
+    - [Environment Variables](#environment-variables)
+    - [Local Setup](#local-setup)
+    - [Running](#running)
+  - [Integrations](#integrations)
+    - [Jira](#jira)
+    - [AI (Gemini / Vertex AI)](#ai-gemini--vertex-ai)
+  - [API Reference](#api-reference)
+  - [Data Model](#data-model)
+  - [Security \& Privacy](#security--privacy)
+  - [Deployment](#deployment)
+  - [Success Metrics](#success-metrics)
+  - [Roadmap](#roadmap)
+  - [Contributing](#contributing)
+  - [Troubleshooting / FAQ](#troubleshooting--faq)
+  - [Maintainers](#maintainers)
+  - [License](#license)
+  - [Changelog](#changelog)
 
 ---
+
+## Problem
+Product managers juggle scattered discovery notes, KPIs, Jira/ADO issues, documents, and handoffs. Strategy rarely survives into execution, and post‑release signals don’t loop back into the plan—leading to drift, rework, and opaque outcomes.
+
+## Solution
+**ProDuh!** unifies the lifecycle so intent and metrics persist from **discovery** through **deprecation**:
+- **Strategy as data:** KPIs & Goals are first‑class and reused in planning, backlog shaping, reviews, and operate.
+- **Multi‑agent loop:** An agent running in a loop architecture monitors product health, maps signals to intent, opens bugs/incidents, and proposes backlog deltas—until deprecation is complete.
+- **Human‑in‑the‑loop:** ProDuh drafts and automates routine steps; you accept, edit, or regenerate with traceable rationale.
+
+## Key Features
+- **AI Discovery & Strategy:** Generate briefs, user problems, KPIs/Goals, and first‑cut roadmaps from prompts.
+- **Backlog Shaping:** Turn strategy into epics, stories, and subtasks (Jira‑ready).
+- **Jira Enhancements:** Priority (RICE/WSJF), dependency detection, sprint goal compose, DoD checklists, risk radar, hierarchy repairs.
+- **Operate Loop (Always‑on):** Detect drift & anomalies; auto‑ticket bugs/incidents; propose fixes; track to closure.
+- **Portfolio View:** Manage multiple products (approved/pending/upcoming) with per‑product tabs across all phases.
+- **End‑to‑End:** Discovery → Strategy → Development → Testing → Release → GTM → Operate → **Deprecation**.
 
 ## Architecture
+- **Client:** React (Vite) talks to server REST endpoints.
+- **Server:** Node.js (TypeScript) exposes `/api/*` routes.
+- **AI:** Google Vertex AI (Gemini 1.5).
+- **DB:** Postgres (via Prisma or equivalent).
+- **Integrations:** Jira today; designed for ADO, Confluence, GitHub, ServiceNow next.
+
+![Architecture](docs/architecture.png)
+
+## Monorepo Layout
 ```
 produh/
-├─ client/                 # React app (Vite)
-│  ├─ src/
-│  │  ├─ pages/Discovery.tsx
-│  │  └─ index.css
-│  └─ ...
+├─ client/                 # React app
 ├─ server/                 # Node + TypeScript API
-│  ├─ src/
-│  │  ├─ ai/gemini.ts      # Vertex AI Gemini helpers
-│  │  ├─ routes/discover.ts# Discovery/strategy routes
-│  │  ├─ db/index.ts       # DB client (e.g., Prisma/Postgres)
-│  │  └─ index.ts          # HTTP server
-│  └─ ...
-└─ README.md
+├─ scripts/                # project scripts & utilities
+└─ docs/                   # architecture, ADRs, diagrams
 ```
 
-- **Client**: React + Vite, talks to `server` REST endpoints.
-- **Server**: Node (TypeScript, `tsx` for dev), exposes `/api/*` routes.
-- **AI**: Google Vertex AI (Gemini 1.5 family) for generation.
-- **DB**: Postgres (via Prisma or similar) for persistence.
+## Tech Stack
+- **Frontend:** React 18, Vite, TypeScript
+- **Backend:** Node.js 22, TypeScript, tsx
+- **AI:** Google Vertex AI (Gemini 1.5 family)
+- **DB:** Postgres (+ Prisma)
+- **Tracker:** Jira Cloud REST API
+- **Package Manager:** npm (pnpm optional)
 
----
+## Getting Started
 
-## Tech stack
-- **Frontend**: React 18, Vite, TypeScript
-- **Backend**: Node.js 22, TypeScript, `tsx`
-- **AI**: Google Vertex AI Gemini
-- **Issue Tracker**: Jira Cloud REST API
-- **DB**: Postgres (+ Prisma if present)
+### Prerequisites
+- Node.js ≥ 20 (tested on 22.x)
+- npm ≥ 9
+- Postgres (local or hosted)
+- Google Cloud project with Vertex AI enabled
+- Jira Cloud project (for issue automation)
 
-> **Package manager:** You can use **npm**. `pnpm` is optional (see Troubleshooting for Corepack notes).
+### Environment Variables
+Create `.env` files:
 
----
-
-## Getting started
-
-### Prereqs
-- **Node.js** ≥ 20 (tested on **22.13.1**)
-- **npm** ≥ 9
-- **Postgres** (local or hosted)
-- A **Google Cloud** project with **Vertex AI** enabled (for Gemini)
-- A **Jira Cloud** project (for issue automation)
-
-### Environment variables
-Create two files, one per app:
-
-**`server/.env`**
-```
-# Server
+**server/.env**
+```ini
 PORT=5050
 CORS_ORIGIN=http://localhost:5173
-
-# Database
 DATABASE_URL=postgres://USER:PASSWORD@HOST:PORT/DB
 
-# Google / Vertex AI
 GOOGLE_PROJECT_ID=your-gcp-project-id
 VERTEX_LOCATION=us-central1
 VERTEX_MODEL=gemini-1.5-flash
-# Service Account auth: one of the following approaches
-GOOGLE_APPLICATION_CREDENTIALS=/absolute/path/to/service-account.json
-# or provide JSON directly if your library supports it
-# GOOGLE_CREDENTIALS_JSON={"type":"service_account",...}
+GOOGLE_APPLICATION_CREDENTIALS=/abs/path/service-account.json
 
-# (Optional) Rate limiting/backoff hints
-GEMINI_MAX_TOKENS=4096
-GEMINI_TEMPERATURE=0.4
-
-# Jira
 ATLASSIAN_DOMAIN=your-domain.atlassian.net
 ATLASSIAN_EMAIL=you@example.com
-ATLASSIAN_API_TOKEN=your-jira-api-token
+ATLASSIAN_API_TOKEN=your-token
 ATLASSIAN_PROJECT_KEY=PROJ
-# These two are the numeric type IDs (NOT the names)
 ATLASSIAN_STORY_TYPE=10001
 ATLASSIAN_SUBTASK_TYPE=10002
 ```
 
-**`client/.env`**
-```
+**client/.env**
+```ini
 VITE_API_URL=http://localhost:5050
 ```
 
-> If you don’t know your Jira **type IDs**, see [Jira integration](#jira-integration).
-
-### Local setup
+### Local Setup
 ```bash
 # from repo root
-# 1) Install deps
 (cd server && npm i)
 (cd client && npm i)
 
-# 2) (Optional) Prisma
-# If using Prisma:
+# (optional) Prisma
 # (cd server && npx prisma generate && npx prisma migrate dev)
 ```
 
----
-
-## Running the apps
-
-**Backend**
+### Running
 ```bash
-cd server
-npm run dev    # uses tsx watch; listens on :5050 by default
+# Backend
+cd server && npm run dev
+
+# Frontend
+cd client && npm run dev
 ```
+Visit http://localhost:5173
 
-**Frontend**
-```bash
-cd client
-npm run dev    # Vite dev server on :5173
-```
+## Integrations
 
-Visit **http://localhost:5173**. The client calls the server at `VITE_API_URL`.
+### Jira
+Requires the `ATLASSIAN_*` envs and numeric **issue type IDs**.  
+Find IDs via Jira REST: `/rest/api/3/issuetype` or `issue/createmeta`.
 
----
+### AI (Gemini / Vertex AI)
+Ensure the model exists in your region, credentials are readable by the server, and quotas are set appropriately.
 
-## Jira integration
-- The server expects a Jira Cloud project and these envs:
-  - `ATLASSIAN_DOMAIN`, `ATLASSIAN_EMAIL`, `ATLASSIAN_API_TOKEN`, `ATLASSIAN_PROJECT_KEY`
-  - **Type IDs**: `ATLASSIAN_STORY_TYPE` and `ATLASSIAN_SUBTASK_TYPE` must be **numeric IDs**.
+## API Reference
+- `POST /api/discover` → strategy brief + backlog suggestions
+- `POST /api/jira/sync` → create Story/Sub‑task issues
+- `GET /health` → liveness
 
-**Find issue type IDs** (one reliable path):
-1. Use Jira REST: `GET /rest/api/3/issuetype` or `GET /rest/api/3/issue/createmeta?projectKeys=<KEY>&expand=projects.issuetypes.fields`
-2. Inspect the JSON response and copy the `id` for **Story** and **Sub-task**.
+## Data Model
+Key entities: `Product`, `Brief`, `KPI`, `Goal`, `Epic`, `Story`, `Task`, `Signal`, `Incident`.
 
-> If your API user cannot see Story/Sub‑task in the response, ensure that:
-> - The user has access to the project and issue types.
-> - Those issue types are part of the project’s **issue type scheme**.
+## Security & Privacy
+- Keep secrets in `.env` (never commit them).
+- Principle of least privilege for service accounts.
+- (Roadmap) SSO/roles, audit trails, prompt redaction & PII handling.
 
----
+## Deployment
+- **Dev:** Local / Docker Compose
+- **Prod:** Any Node hosting (e.g., Render/Fly/AWS). Set envs, provision DB, run server then client.
+- Expose health checks and ship logs/metrics.
 
-## AI (Gemini / Vertex AI) integration
-The helper at `server/src/ai/gemini.ts` calls Gemini via Vertex AI.
+## Success Metrics
+- **Time‑to‑strategy:** ↓ 50–70% to first viable brief.
+- **Story readiness:** ≥ 80% implementation‑ready on first pass.
+- **Lead time:** ↓ 20–30% from strategy approval to first merged PR.
+- **Operate responsiveness:** ≥ 90% of critical signals auto‑ticketed; MTTR ↓ 25%.
+- **Backlog coverage:** ≥ 90% of strategy themes mapped to epics/stories in one session.
 
-**Common pitfalls**
-- **404 model not found**: Use a model that exists in your region & API version, e.g. `gemini-1.5-flash` (or a `-002` if your SDK requires exact versions). Also confirm Vertex AI is enabled in your GCP project & location.
-- **429 RESOURCE_EXHAUSTED**: You hit rate/quotas. Add exponential backoff and/or lower request frequency; consider requesting higher quotas in GCP.
-- **Auth**: Make sure your service account has Vertex AI permissions and your server process can read credentials (env or file path).
-
----
-
-## API
-> The exact routes may evolve; adjust as you wire up the UI. Below are the defaults implied by current files.
-
-### POST `/api/discover`
-Generate a strategy brief & backlog suggestions from a prompt.
-
-**Request**
-```json
-{
-  "prompt": "Build a PM co-pilot that turns discovery into execution"
-}
-```
-
-**Response (example)**
-```json
-{
-  "brief": { "problem": "...", "goals": ["..."], "metrics": ["..."] },
-  "backlog": { "epics": [ ... ], "stories": [ ... ] }
-}
-```
-
-### POST `/api/jira/sync`
-Create Jira issues (Story/Sub‑task) from the generated backlog.
-
-**Request**
-```json
-{ "epics": [...], "stories": [...], "parent": "<optional epic key>" }
-```
-
-### GET `/health`
-Basic liveness check.
-
----
-
-## Project scripts
-> Run each command inside its folder unless noted.
-
-**server/package.json** (typical)
-```json
-{
-  "scripts": {
-    "dev": "tsx watch src/index.ts",
-    "build": "tsc -p tsconfig.json",
-    "start": "node dist/index.js",
-    "lint": "eslint .",
-    "format": "prettier -w ."
-  }
-}
-```
-
-**client/package.json** (typical)
-```json
-{
-  "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview",
-    "lint": "eslint .",
-    "format": "prettier -w ."
-  }
-}
-```
-
----
-
-## Conventions
-- **Branching**: `release`, `feat/*` (e.g., `feat/login`, `feat/uid`), `ui-upgrade`.
-- **Commits**: Conventional style (e.g., `feat:`, `fix:`, `docs:`).
-- **Env**: All secrets in `.env` files (never commit them).
-- **Paths**: Keep routes under `server/src/routes/*`.
-
----
-
-## Troubleshooting
-
-### Git: pulling `release` with local changes
-```
-# You have local edits you don’t want to lose
-git status
-git stash -u                 # stashes tracked + untracked
-git pull origin release
-# (optional) re-apply your work
-git stash pop
-```
-
-### pnpm/Corepack errors
-If you see `Cannot find matching keyid` from Corepack:
-```
-corepack disable    # or just use npm
-# or install pnpm directly (optional)
-npm i -g pnpm
-```
-You can safely use **npm** for this repo.
-
-### Gemini 404 / 429
-- **404 NOT_FOUND**: Check `VERTEX_MODEL` and region compatibility.
-- **429 RESOURCE_EXHAUSTED**: Add retry/backoff; reduce frequency; verify quotas.
-
-### Node version
-Use Node **22.13.1** (or latest 22.x LTS). If you switch versions, reinstall deps.
-
----
+## Roadmap
+- **Integrations:** ADO, Confluence write‑back, GitHub PR signals, ServiceNow incident→backlog loop.
+- **Quality Agents:** Requirements‑QA micro‑agent; Release Readiness mini‑agent with risk gates.
+- **Operate+:** Anomaly detection, experiment loops, automated deprecation flows & migrations.
+- **Governance:** SSO, roles, audit logs, templates, and guardrails for scale & compliance.
 
 ## Contributing
 1. Fork → feature branch → PR.
-2. Add/adjust tests where relevant.
-3. Keep README and `.env.example` in sync with changes.
+2. Follow Conventional Commits.
+3. Keep README and `.env.example` updated.
 
----
+## Troubleshooting / FAQ
+- **Gemini 404:** Wrong model/region → fix `VERTEX_MODEL`/`VERTEX_LOCATION`.
+- **429 quotas:** Add retry/backoff; request higher quotas.
+- **CORS errors:** Check `CORS_ORIGIN`.
+- **Jira type IDs missing:** Ensure user/project scheme includes Story & Sub‑task.
+
+## Maintainers
+- DYNE LABS — @your-team-handle
 
 ## License
-© DYNE LABS 2025
+MIT (see `LICENSE`)
+
+## Changelog
+See `CHANGELOG.md`.
