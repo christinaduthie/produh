@@ -9,7 +9,7 @@ export async function createBrief(productId: string, signals: any){
 const brief = await geminiJSON(ProblemBriefPrompt, { signals });
 const id = uuid();
 await q(SQL.BRIEF_INSERT,
-[id, productId, brief.summary, JSON.stringify(brief.pains), JSON.stringify(brief.personas), JSON.stringify(brief.kpiCandidates), brief.mermaid, JSON.stringify(brief.evidence)]);
+[id, productId, brief.summary, JSON.stringify(brief.pains), JSON.stringify(brief.personas), JSON.stringify(brief.kpiCandidates), brief.mermaid, JSON.stringify(brief.evidence), '']);
 return { id, brief };
 }
 

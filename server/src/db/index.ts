@@ -34,6 +34,7 @@ type BriefRow = {
   mermaid: string;
   evidence: any[];
   confluence_page_id: string | null;
+  html?: string | null;
   created_at: string;
 };
 
@@ -59,18 +60,29 @@ type BacklogRow = {
   created_at: string;
 };
 
+type ProblemStatementRow = {
+  id: string;
+  product_id: string;
+  statement: string;
+  html: string | null;
+  confluence_page_id: string | null;
+  created_at: string;
+};
+
 const mockTables: {
   products: ProductRow[];
   signals: SignalRow[];
   briefs: BriefRow[];
   solutions: SolutionRow[];
   backlogs: BacklogRow[];
+  problemStatements: ProblemStatementRow[];
 } = {
   products: [],
   signals: [],
   briefs: [],
   solutions: [],
-  backlogs: []
+  backlogs: [],
+  problemStatements: []
 };
 
 const nowIso = () => new Date().toISOString();
@@ -99,16 +111,21 @@ export const SQL = {
     'INSERT INTO signal (id, product_id, source, author, ts, text, link, tags) VALUES ($1,$2,$3,$4,$5,$6,$7,$8) ON CONFLICT (id) DO NOTHING',
   SIGNAL_SELECT_FOR_PRODUCT: 'SELECT * FROM signal WHERE product_id=$1 ORDER BY ts DESC',
   BRIEF_INSERT:
-    'INSERT INTO brief (id, product_id, summary, pains, personas, kpi_candidates, mermaid, evidence) VALUES ($1,$2,$3,$4,$5,$6,$7,$8)',
+    'INSERT INTO brief (id, product_id, summary, pains, personas, kpi_candidates, mermaid, evidence, html) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)',
   BRIEF_SELECT_LATEST: 'SELECT * FROM brief WHERE product_id=$1 ORDER BY created_at DESC LIMIT 1',
   BRIEF_UPDATE_CONFLUENCE: 'UPDATE brief SET confluence_page_id=$1 WHERE id=$2',
+  BRIEF_UPDATE_HTML: 'UPDATE brief SET html=$1 WHERE id=$2',
   SOLUTION_INSERT:
     'INSERT INTO solution (id, product_id, spec, risks, dependencies, kpis, goals, gate_scores, passed) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)',
   SOLUTION_SELECT_LATEST: 'SELECT * FROM solution WHERE product_id=$1 ORDER BY created_at DESC LIMIT 1',
   SOLUTION_UPDATE_CONFLUENCE: 'UPDATE solution SET confluence_page_id=$1 WHERE id=$2',
   BACKLOG_INSERT: 'INSERT INTO backlog (id, product_id, json) VALUES ($1,$2,$3)',
   BACKLOG_SELECT_LATEST: 'SELECT * FROM backlog WHERE product_id=$1 ORDER BY created_at DESC LIMIT 1',
-  BACKLOG_UPDATE_KEYS: 'UPDATE backlog SET jira_keys=$1 WHERE id=$2'
+  BACKLOG_UPDATE_KEYS: 'UPDATE backlog SET jira_keys=$1 WHERE id=$2',
+  PROBLEM_STATEMENT_INSERT:
+    'INSERT INTO problem_statement (id, product_id, statement, html, confluence_page_id) VALUES ($1,$2,$3,$4,$5)',
+  PROBLEM_STATEMENT_SELECT_LATEST: 'SELECT * FROM problem_statement WHERE product_id=$1 ORDER BY created_at DESC LIMIT 1',
+  PROBLEM_STATEMENT_UPDATE_CONFLUENCE: 'UPDATE problem_statement SET confluence_page_id=$1 WHERE id=$2'
 } as const;
 
 const SCHEMA_TABLES = [
@@ -161,6 +178,7 @@ const SCHEMA_TABLES = [
     mermaid TEXT,
     evidence JSONB DEFAULT '[]'::jsonb,
     confluence_page_id TEXT,
+    html TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
   )`,
   `CREATE TABLE IF NOT EXISTS solution (
@@ -182,6 +200,14 @@ const SCHEMA_TABLES = [
     json JSONB DEFAULT '{}'::jsonb,
     jira_keys JSONB,
     mirror_confluence_page_id TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  )`,
+  `CREATE TABLE IF NOT EXISTS problem_statement (
+    id TEXT PRIMARY KEY,
+    product_id TEXT REFERENCES product(id),
+    statement TEXT,
+    html TEXT,
+    confluence_page_id TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
   )`,
   `CREATE TABLE IF NOT EXISTS health_snapshot (
@@ -207,6 +233,7 @@ const SCHEMA_TABLES = [
 
 const SCHEMA_PATCHES = [
   `ALTER TABLE brief ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP`,
+  `ALTER TABLE brief ADD COLUMN IF NOT EXISTS html TEXT`,
   `ALTER TABLE solution ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP`,
   `ALTER TABLE backlog ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP`,
   `ALTER TABLE artifact ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP`,
@@ -243,6 +270,16 @@ export async function q<T = any>(sql: string, params: any[] = []): Promise<{ row
 
 function handleMockQuery(sql: string, params: any[]): any[] {
   switch (sql) {
+    case 'SELECT name FROM product WHERE id=$1':
+      return mockTables.products.filter((p) => p.id === params[0]).map(clone);
+    case 'SELECT COUNT(*)::int AS cnt FROM brief WHERE product_id=$1': {
+      const count = mockTables.briefs.filter((b) => b.product_id === params[0]).length;
+      return [{ cnt: count }];
+    }
+    case 'SELECT COUNT(*)::int AS cnt FROM problem_statement WHERE product_id=$1 AND confluence_page_id IS NOT NULL': {
+      const count = mockTables.problemStatements.filter((ps) => ps.product_id === params[0] && ps.confluence_page_id).length;
+      return [{ cnt: count }];
+    }
     case SQL.PRODUCT_SELECT_ALL:
       return [...mockTables.products]
         .sort((a, b) => new Date(b.last_change_at).getTime() - new Date(a.last_change_at).getTime())
@@ -292,6 +329,7 @@ function handleMockQuery(sql: string, params: any[]): any[] {
         mermaid: params[6],
         evidence: parseJson(params[7], []),
         confluence_page_id: null,
+        html: params[8] || '',
         created_at: nowIso()
       });
       touchProduct(params[1]);
@@ -303,6 +341,11 @@ function handleMockQuery(sql: string, params: any[]): any[] {
     case SQL.BRIEF_UPDATE_CONFLUENCE: {
       const row = mockTables.briefs.find((b) => b.id === params[1]);
       if (row) row.confluence_page_id = params[0];
+      return [];
+    }
+    case SQL.BRIEF_UPDATE_HTML: {
+      const row = mockTables.briefs.find((b) => b.id === params[1]);
+      if (row) row.html = params[0];
       return [];
     }
     case SQL.SOLUTION_INSERT:
@@ -346,6 +389,25 @@ function handleMockQuery(sql: string, params: any[]): any[] {
     case SQL.BACKLOG_UPDATE_KEYS: {
       const row = mockTables.backlogs.find((b) => b.id === params[1]);
       if (row) row.jira_keys = parseJson(params[0], {});
+      return [];
+    }
+    case SQL.PROBLEM_STATEMENT_INSERT:
+      mockTables.problemStatements.push({
+        id: params[0],
+        product_id: params[1],
+        statement: params[2],
+        html: params[3] || null,
+        confluence_page_id: params[4] || null,
+        created_at: nowIso()
+      });
+      return [];
+    case SQL.PROBLEM_STATEMENT_SELECT_LATEST: {
+      const entry = mockTables.problemStatements.filter((ps) => ps.product_id === params[0]).pop();
+      return entry ? [clone(entry)] : [];
+    }
+    case SQL.PROBLEM_STATEMENT_UPDATE_CONFLUENCE: {
+      const row = mockTables.problemStatements.find((ps) => ps.id === params[1]);
+      if (row) row.confluence_page_id = params[0];
       return [];
     }
     default:
