@@ -36,6 +36,8 @@ export default function Discovery() {
   const [selected, setSelected] = useState<Set<number>>(new Set());
   const [statementLoading, setStatementLoading] = useState(false);
   const [statement, setStatement] = useState('');
+  const [statementPublished, setStatementPublished] = useState(false);
+  const [publishing, setPublishing] = useState(false);
 
   async function loadEmbed() {
     if (!id) return;
@@ -116,11 +118,26 @@ export default function Discovery() {
     try {
       const res = await api('/discover/problem-statement', { productId: id, ideas: chosen });
       setStatement(res.statement || '');
+      setStatementPublished(false);
       toast.show('Problem statement drafted');
     } catch (err) {
       toast.show('Failed to create statement', 'error');
     } finally {
       setStatementLoading(false);
+    }
+  }
+
+  async function publishStatement() {
+    if (!id || !statement) return;
+    setPublishing(true);
+    try {
+      await api('/discover/problem-statement/publish', { productId: id });
+      setStatementPublished(true);
+      toast.show('Problem statement added to Confluence');
+    } catch (err) {
+      toast.show('Failed to add to Confluence', 'error');
+    } finally {
+      setPublishing(false);
     }
   }
 
@@ -280,10 +297,21 @@ export default function Discovery() {
               </button>
             </div>
             {statement && (
-              <div className="statement-card">
-                <h4>Problem Statement</h4>
-                <p>{statement}</p>
-              </div>
+              <>
+                <div className="statement-card">
+                  <h4>Problem Statement</h4>
+                  <p>{statement}</p>
+                </div>
+                <div className="statement-actions">
+                  <button
+                    className="btn"
+                    onClick={publishStatement}
+                    disabled={publishing || statementPublished}
+                  >
+                    {publishing ? 'Publishing…' : statementPublished ? 'Added to Confluence' : 'Add to Confluence'}
+                  </button>
+                </div>
+              </>
             )}
           </>
         ) : (

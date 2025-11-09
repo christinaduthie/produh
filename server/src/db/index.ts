@@ -124,7 +124,8 @@ export const SQL = {
   BACKLOG_UPDATE_KEYS: 'UPDATE backlog SET jira_keys=$1 WHERE id=$2',
   PROBLEM_STATEMENT_INSERT:
     'INSERT INTO problem_statement (id, product_id, statement, html, confluence_page_id) VALUES ($1,$2,$3,$4,$5)',
-  PROBLEM_STATEMENT_SELECT_LATEST: 'SELECT * FROM problem_statement WHERE product_id=$1 ORDER BY created_at DESC LIMIT 1'
+  PROBLEM_STATEMENT_SELECT_LATEST: 'SELECT * FROM problem_statement WHERE product_id=$1 ORDER BY created_at DESC LIMIT 1',
+  PROBLEM_STATEMENT_UPDATE_CONFLUENCE: 'UPDATE problem_statement SET confluence_page_id=$1 WHERE id=$2'
 } as const;
 
 const SCHEMA_TABLES = [
@@ -269,6 +270,16 @@ export async function q<T = any>(sql: string, params: any[] = []): Promise<{ row
 
 function handleMockQuery(sql: string, params: any[]): any[] {
   switch (sql) {
+    case 'SELECT name FROM product WHERE id=$1':
+      return mockTables.products.filter((p) => p.id === params[0]).map(clone);
+    case 'SELECT COUNT(*)::int AS cnt FROM brief WHERE product_id=$1': {
+      const count = mockTables.briefs.filter((b) => b.product_id === params[0]).length;
+      return [{ cnt: count }];
+    }
+    case 'SELECT COUNT(*)::int AS cnt FROM problem_statement WHERE product_id=$1 AND confluence_page_id IS NOT NULL': {
+      const count = mockTables.problemStatements.filter((ps) => ps.product_id === params[0] && ps.confluence_page_id).length;
+      return [{ cnt: count }];
+    }
     case SQL.PRODUCT_SELECT_ALL:
       return [...mockTables.products]
         .sort((a, b) => new Date(b.last_change_at).getTime() - new Date(a.last_change_at).getTime())
@@ -393,6 +404,11 @@ function handleMockQuery(sql: string, params: any[]): any[] {
     case SQL.PROBLEM_STATEMENT_SELECT_LATEST: {
       const entry = mockTables.problemStatements.filter((ps) => ps.product_id === params[0]).pop();
       return entry ? [clone(entry)] : [];
+    }
+    case SQL.PROBLEM_STATEMENT_UPDATE_CONFLUENCE: {
+      const row = mockTables.problemStatements.find((ps) => ps.id === params[1]);
+      if (row) row.confluence_page_id = params[0];
+      return [];
     }
     default:
       throw new Error(`Mock query not implemented: ${sql}`);
