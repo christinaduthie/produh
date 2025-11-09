@@ -1,4 +1,4 @@
-# produh
+# ProDuh!
 
 An opinionated, full‑stack Product Management co‑pilot that helps you go from *idea → strategy → backlog → execution*. It provides AI‑assisted discovery, strategy briefs, and Jira issue automation in one workflow.
 
@@ -291,5 +291,4 @@ Use Node **22.13.1** (or latest 22.x LTS). If you switch versions, reinstall dep
 ---
 
 ## License
-Specify your license (e.g., MIT) here.
-
+© DYNE LABS 2025
